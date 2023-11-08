@@ -5,15 +5,13 @@
   ],
   "plugins": [
     "@babel/plugin-transform-typescript",
-    "@babel/plugin-transform-flow-strip-types",
     "babel-plugin-transform-typescript-metadata",
     [
       "@babel/plugin-proposal-decorators", {
         "version": "legacy"
       }
     ],
-    "@babel/plugin-proposal-class-properties",
-    "@babel/proposal-object-rest-spread",
-    "lodash"
+    "@babel/plugin-transform-class-properties",
+    "@babel/plugin-transform-object-rest-spread"
   ]
 }
