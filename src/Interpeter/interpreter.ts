@@ -35,7 +35,6 @@ export class Interpreter implements IExprVisitor {
         this.printer = new ConsolePrinter();
 
         this.scope = new Stack<string>();
-        this.scope.push(this.GLOBAL_SCOPE);
 
         this.result = null;
     }
@@ -247,6 +246,9 @@ export class Interpreter implements IExprVisitor {
     }
 
     private getScope(): string{
+        if(this.scope.empty()){
+            return `_${this.GLOBAL_SCOPE}`;
+        }
         return `_${this.scope.getAll()?.join("_")!}`;
     }
 }
