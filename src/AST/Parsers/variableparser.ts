@@ -20,7 +20,7 @@ export class VariableParser extends ExpressionParser{
         const variableParse = variableTryParse(_token);
         if(this.tokens.peek() === Tokens.SET){
             const operator = this.tokens.pop() as string;
-            return new VariableValueChangeExpr(_token, operator, this.context.ParseExpression());
+            return new VariableValueChangeExpr(_token, operator, this.context.parseExpression());
         }
         return new VariableExpr(variableParse[1]);
     }

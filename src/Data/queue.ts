@@ -22,6 +22,10 @@ export class Queue<T>{
         return this.storage.length;
     }
 
+    public empty(): boolean{
+        return this.storage.length == 0;
+    }
+
     public clear(): void{
         this.storage.length = 0;
     }

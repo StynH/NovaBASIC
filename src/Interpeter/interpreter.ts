@@ -4,23 +4,29 @@ import {TernaryExpr} from "../AST/Expressions/ternaryExpr";
 import {VariableExpr} from "../AST/Expressions/variableexpr";
 import {VariableDeclarationExpr} from "../AST/Expressions/variabledeclarationexpr";
 import {ConstantExpr} from "../AST/Expressions/constantexpr";
-import {ConsolePrinter, IPrinter} from "./STL/printer";
+import {ConsolePrinter, IPrinter} from "../STL/Functionality/printer";
 import {MemoryTable} from "./Memory/memorytable";
 import {Expr} from "../AST/Expressions/expr";
 import {Tokens} from "../AST/Tokens/tokens";
 import {VariableValueChangeExpr} from "../AST/Expressions/variablevaluechangeexpr";
-import {PrintExpr} from "../AST/Expressions/STL/printexpr";
-import {ArithmeticExpr} from "../AST/Expressions/STL/arithmeticexpr";
+import {PrintExpr} from "../STL/AST/Expressions/printexpr";
+import {ArithmeticExpr} from "../STL/AST/Expressions/arithmeticexpr";
+import {ConditionalExpr} from "../AST/Expressions/Conditional/conditionalexpr";
+import {FunctionTable} from "./Memory/functiontable";
+import {FunctionDeclarationExpr} from "../AST/Expressions/Functions/functiondeclarationexpr";
+import {FunctionExpr} from "../AST/Expressions/Functions/functionexpr";
 
 export class Interpreter implements IExprVisitor {
 
     private memoryTable: MemoryTable;
+    private functionTable: FunctionTable;
     private printer: IPrinter;
 
     private result: any | null;
 
     public constructor() {
         this.memoryTable = new MemoryTable();
+        this.functionTable = new FunctionTable();
         this.printer = new ConsolePrinter();
 
         this.result = null;
@@ -42,6 +48,21 @@ export class Interpreter implements IExprVisitor {
                 break;
             case Tokens.MULTIPLY:
                 this.result = lhs * rhs;
+                break;
+            case Tokens.EQUALS:
+                this.result = lhs === rhs;
+                break;
+            case Tokens.GTE:
+                this.result = lhs >= rhs;
+                break;
+            case Tokens.LTE:
+                this.result = lhs <= rhs;
+                break;
+            case Tokens.LT:
+                this.result = lhs < rhs;
+                break;
+            case Tokens.GT:
+                this.result = lhs > rhs;
                 break;
             default:
                 throw new Error(`Unknown arithmetic ${expr.condition}.`);
@@ -107,9 +128,36 @@ export class Interpreter implements IExprVisitor {
         this.memoryTable.setVariableValue(variable.name, value);
     }
 
+    public visitConditionalExpr(expr: ConditionalExpr): void {
+        const result = this.executeExpr(expr.condition);
+        if(result == true){
+            for (const subExpr of expr.trueExprTree) {
+                this.executeExpr(subExpr);
+            }
+        }
+    }
+
+    public visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void {
+        this.functionTable.setFunction(expr, "GLOBAL"); //TODO: Extend with classes.
+    }
+
+    public visitFunctionExpr(expr: FunctionExpr): void {
+        const func = this.functionTable.getFunction(expr.value, "GLOBAL"); //TODO: Extend with classes.
+        if(func != null){
+            for (const expr of func.value.exprTree) {
+                this.executeExpr(expr);
+            }
+            return;
+        }
+        throw new Error(`Unknown subroutine call: ${expr.value}.`);
+    }
+
     public debug(): void{
         console.log("--Dumping memory table--")
         this.memoryTable.debug();
+        console.log("--------------------------")
+        console.log("--Dumping function table--")
+        this.functionTable.debug();
     }
 
     private executeExpr(expr: Expr): any{

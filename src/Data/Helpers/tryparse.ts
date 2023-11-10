@@ -37,3 +37,18 @@ export function variableTryParse(value: string): [boolean, string] {
     const isValid = validVariableRegex.test(value);
     return [isValid, isValid ? value : ''];
 }
+
+export function functionTryParse(value: string): [boolean, string, string[]] {
+    const validFunctionRegex = /^([a-zA-Z_$][a-zA-Z0-9_$]*)\(([^)]*)\)$/;
+
+    const match = value.match(validFunctionRegex);
+    if (match && match[1]) {
+        const functionName = match[1];
+        const paramsString = match[2].trim();
+        const params = paramsString ? paramsString.split(/\s*,\s*/).filter(param => param.length > 0) : [];
+
+        return [true, functionName, params];
+    }
+
+    return [false, '', []];
+}

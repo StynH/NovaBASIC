@@ -19,7 +19,7 @@ export class VariableDeclarationParser extends ExpressionParser{
         const operator = this.tokens.pop();
 
         if(operator === Tokens.SET){
-            const assignment = this.context.ParseExpression();
+            const assignment = this.context.parseExpression();
             return new VariableDeclarationExpr(variable as string, operator, assignment);
         }
         else{

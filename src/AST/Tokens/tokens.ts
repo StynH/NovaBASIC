@@ -10,8 +10,10 @@ export class Tokens {
     @Token() public static readonly QUESTION_MARK = '?';
     @Token() public static readonly SEMICOLON = ':';
     @Token() public static readonly COMMA = ',';
-    @Token() public static readonly OPENING_PARENTHESIS = '(';
-    @Token() public static readonly CLOSING_PARENTHESIS = ')';
+    @Token() public static readonly GTE = ">="
+    @Token() public static readonly LTE = "<="
+    @Token() public static readonly GT = ">"
+    @Token() public static readonly LT = "<"
     @Token() public static readonly EQUALS = '==';
     @Token() public static readonly SET = '=';
     @Token() public static readonly OPENING_BRACKET = '[';
@@ -23,6 +25,16 @@ export class Tokens {
     @Token() public static readonly AND = '&&';
 
     //Syntax
+    @Token() public static readonly IF = "IF";
+    @Token() public static readonly THEN = "THEN";
+    @Token() public static readonly ENDIF = "ENDIF";
+    @Token() public static readonly SUB = "SUB";
+    @Token() public static readonly END_SUB = "ENDSUB";
+
+    @Token(true) public static readonly FUNCTION = "[a-zA-Z_$][a-zA-Z0-9_$]*\\(([^,)]*?(?:, [^,)]*?)*?)\\)";
+    @Token() public static readonly OPENING_PARENTHESIS = '(';
+    @Token() public static readonly CLOSING_PARENTHESIS = ')';
+
     @Token() public static readonly LET = "LET";
     @Token() public static readonly FOR = "FOR";
     @Token() public static readonly TO = "TO";

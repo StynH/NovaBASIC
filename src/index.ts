@@ -13,7 +13,7 @@ export class NovaBasic{
     public parseCode(code: string): void{
     /* eslint-enable @typescript-eslint/no-unused-vars*/
         this.codeParser.parseInput(code);
-        const parsed = this.codeParser.ParseCode();
+        const parsed = this.codeParser.parseCode();
         const interpreter = new Interpreter();
         parsed.execute(interpreter);
 

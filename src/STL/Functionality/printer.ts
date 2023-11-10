@@ -5,10 +5,10 @@ export interface IPrinter{
 export class ConsolePrinter implements IPrinter{
 
     public print(value: string, interpolation: any | null = null): void {
-        if(value.includes("#{0}")){
+        if(interpolation != null && value.includes("#{0}")){
             value = value.replace("#{0}", interpolation);
         }
-        else{
+        else if(interpolation != null){
             value = `"${value.substring(1, value.length - 1)}${interpolation}"`;
         }
 

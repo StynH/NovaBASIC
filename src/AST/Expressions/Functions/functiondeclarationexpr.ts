@@ -1,18 +1,18 @@
 import {Expr} from "../expr";
 import {IExprVisitor} from "../../Visitor/Interface/exprvisitor";
 
-export class ArithmeticExpr extends Expr{
+export class FunctionDeclarationExpr extends Expr{
 
     public constructor(
-        public variable: Expr,
-        public operator: string,
-        public mutation: Expr
+        public name: string,
+        public exprTree: Expr[],
+        public parameters: string[]
     ) {
         super();
     }
 
     public accept(visitor: IExprVisitor): void {
-        visitor.visitArithmeticExpr(this);
+        visitor.visitFunctionDeclarationExpr(this);
     }
 
 }

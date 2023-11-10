@@ -1,15 +1,21 @@
 import {Queue} from "../Data/queue";
 import {Tokenization} from "./Tokens/tokenization";
 import {Expr} from "./Expressions/expr";
-import {Tokens} from "./Tokens/tokens";
 import {BinaryExpr} from "./Expressions/binaryexpr";
 import {NullExpr} from "./Expressions/nullexpr";
-import {VariableDeclarationExpr} from "./Expressions/variabledeclarationexpr";
-import {boolTryParse, decimalTryParse, intTryParse, stringTryParse, variableTryParse} from "../Data/Helpers/tryparse";
+import {
+    boolTryParse,
+    decimalTryParse,
+    functionTryParse,
+    intTryParse,
+    stringTryParse,
+    variableTryParse
+} from "../Data/Helpers/tryparse";
 import {ConstantExpr} from "./Expressions/constantexpr";
 import {ParsedCode} from "./parsedcode";
-import {PrintExpr} from "./Expressions/STL/printexpr";
 import {ParserFactory, ParsingType} from "./Parsers/Factory/parserfactory";
+import {TokenHelpers} from "../STL/AST/Helpers/tokenhelpers";
+import {Tokens} from "./Tokens/tokens";
 
 export class CodeParser{
 
@@ -22,7 +28,6 @@ export class CodeParser{
     }
 
     public parseInput(input: string): void{
-        console.log(Tokenization.buildRegexPattern());
         const matches =
             Array.from(
                 input.matchAll(
@@ -35,53 +40,26 @@ export class CodeParser{
         }
     }
 
-    public ParseCode(): ParsedCode{
+    public parseCode(): ParsedCode{
         const parsed = new ParsedCode();
         while (this.tokens.length() > 0){
-            parsed.expressions.push(this.ParseExpression());
+            parsed.expressions.push(this.parseExpression());
         }
         return parsed;
     }
 
-    private ParseVariableAssignment(): Expr {
-        const variable = this.tokens.pop();
-        const operator = this.tokens.pop();
-
-        if(operator === Tokens.SET){
-            const assignment = this.ParseExpression();
-            return new VariableDeclarationExpr(variable as string, operator, assignment);
-        }
-        else{
-            throw new Error("Variable declaration malformed.")
-        }
-    }
-    private ParsePrint(): Expr {
-        const value = this.tokens.pop() as string;
-        if(this.tokens.peek() == Tokens.COMMA){
+    public parseExpression(): Expr{
+        let expr = this.parseTerm();
+        const operator = this.tokens.peek()!;
+        if(TokenHelpers.isArithmeticToken(operator)){
             this.tokens.pop();
-            return new PrintExpr(value, this.ParseExpression())
-        }
-
-        return new PrintExpr(value);
-    }
-
-    public ParseExpression(): Expr{
-        let expr = this.ParseTerm();
-        const operator = this.tokens.peek();
-        if(
-            operator === Tokens.PLUS
-            || operator === Tokens.MINUS
-            || operator === Tokens.MULTIPLY
-            || operator === Tokens.DIVIDE
-        ){
-            this.tokens.pop();
-            expr = new BinaryExpr(expr, operator, this.ParseExpression());
+            expr = new BinaryExpr(expr, operator, this.parseExpression());
         }
 
         return expr;
     }
 
-    public ParseTerm(): Expr {
+    public parseTerm(): Expr {
         const token = this.tokens.pop() as string;
 
         const [isString, stringParsed] = stringTryParse(token);
@@ -110,23 +88,39 @@ export class CodeParser{
                 .parse(token);
         }
 
-        if(
-            token === Tokens.INCREMENT_STL
-            || token === Tokens.DECREMENT_STL
-            || token === Tokens.MULTIPLY_STL
-            || token === Tokens.DIVIDE_STL
-        ){
+        if(TokenHelpers.isStlArithmeticToken(token)){
             return this.parserFactory
                 .getExpressionParser(ParsingType.ARITHMETIC)
                 .parse(token);
         }
 
         if(token === Tokens.PRINT_STL){
-            return this.ParsePrint();
+            return this.parserFactory
+                .getExpressionParser(ParsingType.PRINT)
+                .parse(token);
+        }
+
+        if(token === Tokens.IF){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.CONDITIONAL)
+                .parse(token);
         }
 
         if(token === Tokens.NULL){
             return new NullExpr();
+        }
+
+        if(token === Tokens.SUB){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.FUNCTION_DECLARATION)
+                .parse(token);
+        }
+
+        const isFunction= functionTryParse(token)[0];
+        if(isFunction){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.FUNCTION)
+                .parse(token);
         }
 
         const isVariable= variableTryParse(token)[0];
