@@ -12,7 +12,7 @@ import {VariableValueChangeExpr} from "../AST/Expressions/variablevaluechangeexp
 import {PrintExpr} from "../STL/AST/Expressions/printexpr";
 import {ArithmeticExpr} from "../STL/AST/Expressions/arithmeticexpr";
 import {ConditionalExpr} from "../AST/Expressions/Conditional/conditionalexpr";
-import {FunctionTable} from "./Memory/functiontable";
+import {FunctionTable, StoredFunction} from "./Memory/functiontable";
 import {FunctionDeclarationExpr} from "../AST/Expressions/Functions/functiondeclarationexpr";
 import {FunctionExpr} from "../AST/Expressions/Functions/functionexpr";
 import {Stack} from "../Data/stack";
@@ -96,15 +96,16 @@ export class Interpreter implements IExprVisitor {
     }
 
     public visitVariableDeclarationExpr(expr: VariableDeclarationExpr): void {
-        this.memoryTable.setVariable(expr.variable, this.executeExpr(expr.assignment));
+        const scopedName = this.toScopedName(expr.variable);
+        this.memoryTable.setVariable(scopedName, this.executeExpr(expr.assignment));
     }
 
     public visitVariableValueChangeExpr(expr: VariableValueChangeExpr): void{
-        this.memoryTable.setVariableValue(expr.variable, this.executeExpr(expr.assignment));
+        this.setVariableValueScopedOrGlobally(expr.variable, this.executeExpr(expr.assignment));
     }
 
     public visitVariableExpr(expr: VariableExpr): void {
-        this.result = this.memoryTable.getVariable(expr.value)?.value;
+        this.result = this.getVariableValueScopedOrGlobally(expr.value);
     }
 
     public visitPrintExp(expr: PrintExpr): void {
@@ -114,7 +115,8 @@ export class Interpreter implements IExprVisitor {
 
     public visitArithmeticExpr(expr: ArithmeticExpr): void {
         const variableExpr = expr.variable as VariableExpr;
-        const variable = this.memoryTable.getVariable(variableExpr.value)!;
+        const scopedName = this.toScopedName(variableExpr.value);
+        const variable = this.memoryTable.getVariable(scopedName)!;
         const mutation = this.executeExpr(expr.mutation);
 
         let value = variable.value
@@ -150,11 +152,13 @@ export class Interpreter implements IExprVisitor {
     }
 
     public visitFunctionExpr(expr: FunctionExpr): void {
-        const func = this.functionTable.getFunction(expr.value, this.getScope());
+        const func = this.getFunctionScopedOrGlobally(expr.value);
         if(func != null){
+            this.scope.push(expr.value);
             for (const expr of func.value.exprTree) {
                 this.executeExpr(expr);
             }
+            this.scope.pop();
             return;
         }
         throw new Error(`Unknown subroutine call: ${expr.value}.`);
@@ -171,6 +175,55 @@ export class Interpreter implements IExprVisitor {
     private executeExpr(expr: Expr): any{
         expr.accept(this);
         return this.result;
+    }
+
+    private setVariableValueScopedOrGlobally(name: string, value: any): void{
+        const scopedName = this.toScopedName(name);
+        try{
+            this.memoryTable.setVariableValue(scopedName, value);
+        }
+        catch (e){
+            try{
+                this.memoryTable.setVariableValue(`_${this.GLOBAL_SCOPE}_${name}`, value);
+            }
+            catch (e){
+                throw Error(`Variable with name '${name}' not found.`);
+            }
+        }
+    }
+
+    private getVariableValueScopedOrGlobally(name: string): any{
+        const scopedName = this.toScopedName(name);
+        const variable = this.memoryTable.getVariable(scopedName)!;
+        if(variable != null){
+            return variable.value;
+        }
+
+        const globalVariable = this.memoryTable.getVariable(`_${this.GLOBAL_SCOPE}_${name}`);
+        if(globalVariable != null){
+            return globalVariable.value;
+        }
+
+        throw Error(`Variable with name '${name}' not found.`);
+    }
+
+    private getFunctionScopedOrGlobally(name: string): StoredFunction | null{
+        const scopedName = this.toScopedName(name);
+        const func = this.functionTable.getFunction(scopedName, this.getScope())!;
+        if(func != null){
+            return func;
+        }
+
+        const globalFunc = this.functionTable.getFunction(name, `_${this.GLOBAL_SCOPE}`);
+        if(globalFunc != null){
+            return globalFunc;
+        }
+
+        return null;
+    }
+
+    private toScopedName(name: string): string{
+        return `${this.getScope()}_${name}`;
     }
 
     private getScope(): string{
