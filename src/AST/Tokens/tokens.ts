@@ -31,7 +31,7 @@ export class Tokens {
     @Token() public static readonly SUB = "SUB";
     @Token() public static readonly END_SUB = "ENDSUB";
 
-    @Token(true) public static readonly FUNCTION = "[a-zA-Z_$][a-zA-Z0-9_$]*\\(([^,)]*?(?:, [^,)]*?)*?)\\)";
+    @Token(true) public static readonly FUNCTION = "[a-zA-Z_$][a-zA-Z0-9_$]*\\(";
     @Token() public static readonly OPENING_PARENTHESIS = '(';
     @Token() public static readonly CLOSING_PARENTHESIS = ')';
 

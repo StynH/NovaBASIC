@@ -155,6 +155,16 @@ export class Interpreter implements IExprVisitor {
         const func = this.getFunctionScopedOrGlobally(expr.value);
         if(func != null){
             this.scope.push(expr.value);
+            for (let i = 0; i < func.value.parameters.length; ++i) {
+                const parameter = func.value.parameters[i];
+                if(expr.parameters.length <= i){
+                    throw new Error(`Missing required parameter '${parameter}' for function '${expr.value}'.`)
+                }
+
+                const scopedName = this.toScopedName(parameter);
+                this.memoryTable.setVariable(scopedName, this.executeExpr(expr.parameters[i]));
+            }
+
             for (const expr of func.value.exprTree) {
                 this.executeExpr(expr);
             }
@@ -189,6 +199,16 @@ export class Interpreter implements IExprVisitor {
             catch (e){
                 throw Error(`Variable with name '${name}' not found.`);
             }
+        }
+    }
+
+    private setVariableValueScoped(name: string, value: any): void{
+        const scopedName = this.toScopedName(name);
+        try{
+            this.memoryTable.setVariableValue(scopedName, value);
+        }
+        catch (e){
+            throw Error(`Variable with name '${name}' not found.`);
         }
     }
 
