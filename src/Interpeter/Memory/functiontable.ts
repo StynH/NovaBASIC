@@ -18,13 +18,13 @@ export class FunctionTable{
         this.functions.push({ name: internalName, value: func });
     }
 
-    public getFunction(name: string, className: string): StoredFunction | null {
-        const internalName = this.generateInternalFunctionName(name, className);
+    public getFunction(name: string, scope: string): StoredFunction | null {
+        const internalName = this.generateInternalFunctionName(name, scope);
         return this.functions.find(func => func.name === internalName) as StoredFunction | null;
     }
 
-    private generateInternalFunctionName(funcName: string, className: string): string{
-        return `_${className}_${funcName}`;
+    private generateInternalFunctionName(funcName: string, scope: string): string{
+        return `${scope}_${funcName}`;
     }
 
     public debug(): void{

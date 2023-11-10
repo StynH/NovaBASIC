@@ -15,12 +15,17 @@ import {ConditionalExpr} from "../AST/Expressions/Conditional/conditionalexpr";
 import {FunctionTable} from "./Memory/functiontable";
 import {FunctionDeclarationExpr} from "../AST/Expressions/Functions/functiondeclarationexpr";
 import {FunctionExpr} from "../AST/Expressions/Functions/functionexpr";
+import {Stack} from "../Data/stack";
 
 export class Interpreter implements IExprVisitor {
+
+    private readonly GLOBAL_SCOPE = "GLOBAL";
 
     private memoryTable: MemoryTable;
     private functionTable: FunctionTable;
     private printer: IPrinter;
+
+    private scope: Stack<string>
 
     private result: any | null;
 
@@ -28,6 +33,9 @@ export class Interpreter implements IExprVisitor {
         this.memoryTable = new MemoryTable();
         this.functionTable = new FunctionTable();
         this.printer = new ConsolePrinter();
+
+        this.scope = new Stack<string>();
+        this.scope.push(this.GLOBAL_SCOPE);
 
         this.result = null;
     }
@@ -138,11 +146,11 @@ export class Interpreter implements IExprVisitor {
     }
 
     public visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void {
-        this.functionTable.setFunction(expr, "GLOBAL"); //TODO: Extend with classes.
+        this.functionTable.setFunction(expr, this.getScope());
     }
 
     public visitFunctionExpr(expr: FunctionExpr): void {
-        const func = this.functionTable.getFunction(expr.value, "GLOBAL"); //TODO: Extend with classes.
+        const func = this.functionTable.getFunction(expr.value, this.getScope());
         if(func != null){
             for (const expr of func.value.exprTree) {
                 this.executeExpr(expr);
@@ -163,5 +171,9 @@ export class Interpreter implements IExprVisitor {
     private executeExpr(expr: Expr): any{
         expr.accept(this);
         return this.result;
+    }
+
+    private getScope(): string{
+        return `_${this.scope.getAll()?.join("_")!}`;
     }
 }
