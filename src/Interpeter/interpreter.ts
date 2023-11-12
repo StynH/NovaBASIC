@@ -16,27 +16,37 @@ import {FunctionTable, StoredFunction} from "./Memory/functiontable";
 import {FunctionDeclarationExpr} from "../AST/Expressions/Functions/functiondeclarationexpr";
 import {FunctionExpr} from "../AST/Expressions/Functions/functionexpr";
 import {Stack} from "../Data/stack";
+import {GarbageCollector} from "./Memory/garbagecollector";
+import {ReturnExpr} from "../AST/Expressions/Functions/returnexpr";
 
 export class Interpreter implements IExprVisitor {
 
     private readonly GLOBAL_SCOPE = "GLOBAL";
 
-    private memoryTable: MemoryTable;
-    private functionTable: FunctionTable;
+    private readonly memoryTable: MemoryTable;
+    private readonly functionTable: FunctionTable;
+    private gc: GarbageCollector;
     private printer: IPrinter;
 
     private scope: Stack<string>
 
     private result: any | null;
 
+    private returnCalled: boolean;
+    private breakCalled: boolean;
+
     public constructor() {
         this.memoryTable = new MemoryTable();
         this.functionTable = new FunctionTable();
+        this.gc = new GarbageCollector(this.memoryTable, this.functionTable);
         this.printer = new ConsolePrinter();
 
         this.scope = new Stack<string>();
 
         this.result = null;
+
+        this.returnCalled = false;
+        this.breakCalled = false;
     }
 
     public visitBinaryExpr(expr: BinaryExpr): void {
@@ -155,22 +165,41 @@ export class Interpreter implements IExprVisitor {
         if(func != null){
             this.scope.push(expr.value);
             for (let i = 0; i < func.value.parameters.length; ++i) {
+                this.scope.pop();
                 const parameter = func.value.parameters[i];
                 if(expr.parameters.length <= i){
                     throw new Error(`Missing required parameter '${parameter}' for function '${expr.value}'.`)
                 }
 
-                const scopedName = this.toScopedName(parameter);
-                this.memoryTable.setVariable(scopedName, this.executeExpr(expr.parameters[i]));
+                const value = this.executeExpr(expr.parameters[i]);
+                this.scope.push(expr.value);
+                this.memoryTable.setVariable(this.toScopedName(parameter), value);
             }
 
             for (const expr of func.value.exprTree) {
                 this.executeExpr(expr);
+                if(this.returnCalled){
+                    break;
+                }
             }
+
+            if(this.returnCalled){
+                this.returnCalled = false;
+            }
+            else{
+                this.result = null;
+            }
+
+            this.gc.destroyScope(this.getScope());
             this.scope.pop();
             return;
         }
         throw new Error(`Unknown subroutine call: ${expr.value}.`);
+    }
+
+    public visitReturnExpr(expr: ReturnExpr): void {
+        this.result = this.executeExpr(expr.expr);
+        this.returnCalled = true;
     }
 
     public debug(): void{
@@ -249,6 +278,6 @@ export class Interpreter implements IExprVisitor {
         if(this.scope.empty()){
             return `_${this.GLOBAL_SCOPE}`;
         }
-        return `_${this.scope.getAll()?.join("_")!}`;
+        return `_${this.scope.getAll()!.join("_")!}`;
     }
 }

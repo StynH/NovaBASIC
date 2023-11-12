@@ -27,6 +27,7 @@ export class Tokens {
     //Syntax
     @Token() public static readonly IF = "IF";
     @Token() public static readonly THEN = "THEN";
+    @Token() public static readonly RETURN = "RETURN";
     @Token() public static readonly ENDIF = "ENDIF";
     @Token() public static readonly SUB = "SUB";
     @Token() public static readonly END_SUB = "ENDSUB";

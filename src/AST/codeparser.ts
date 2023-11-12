@@ -116,6 +116,12 @@ export class CodeParser{
                 .parse(token);
         }
 
+        if(token === Tokens.RETURN){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.RETURN)
+                .parse(token);
+        }
+
         const isFunction= functionTryParse(token)[0];
         if(isFunction){
             return this.parserFactory

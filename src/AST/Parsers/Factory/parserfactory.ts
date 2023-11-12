@@ -8,6 +8,7 @@ import {PrintParser} from "../../../STL/AST/Parsers/printparser";
 import {ConditionalParser} from "../conditionalparser";
 import {FunctionDeclarationParser} from "../Functions/functiondeclarationparser";
 import {FunctionParser} from "../Functions/functionparser";
+import {ReturnParser} from "../Functions/returnparser";
 
 type EnumDictionary<T extends string | symbol | number, U> = {
     [K in T]: U;
@@ -20,7 +21,8 @@ export enum ParsingType{
     VARIABLE_DECLARATION,
     CONDITIONAL,
     FUNCTION,
-    FUNCTION_DECLARATION
+    FUNCTION_DECLARATION,
+    RETURN
 }
 
 export class ParserFactory{
@@ -57,6 +59,9 @@ export class ParserFactory{
                     break;
                 case ParsingType.FUNCTION:
                     this.parsers[parsingType] = new FunctionParser(this.context, this.tokens);
+                    break;
+                case ParsingType.RETURN:
+                    this.parsers[parsingType] = new ReturnParser(this.context, this.tokens);
                     break;
             }
         }

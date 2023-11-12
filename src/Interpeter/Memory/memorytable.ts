@@ -20,11 +20,26 @@ export class MemoryTable{
         return this.variables.find(variable => variable.name === name) as StoredVariable | null;
     }
 
-    public setVariableValue(variable: string, value: any) {
+    public setVariableValue(variable: string, value: any): void {
         if(this.getVariable(variable) == null){
             throw new Error(`Variable ${variable} is not defined!`);
         }
         this.getVariable(variable)!.value = value;
+    }
+
+    public removeVariablesByScope(scope: string): StoredVariable[]{
+        const removedItems = [];
+        let i = 0;
+
+        while (i < this.variables.length) {
+            if (this.variables[i].name.startsWith(scope)) {
+                removedItems.push(...this.variables.splice(i, 1));
+            } else {
+                i++;
+            }
+        }
+
+        return removedItems;
     }
 
     public debug(): void{

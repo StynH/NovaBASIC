@@ -36,7 +36,7 @@ export class FunctionDeclarationParser extends ExpressionParser{
             throw new Error("Malformed SUB statement, missing ENDSUB.");
         }
 
-        const parameters = expr.parameters.map(param => (param as ConstantExpr<string>).value);
+        const parameters = expr.parameters != null ? expr.parameters.map(param => (param as ConstantExpr<string>).value) : [];
         return new FunctionDeclarationExpr(name, expressionTree, parameters);
     }
 }

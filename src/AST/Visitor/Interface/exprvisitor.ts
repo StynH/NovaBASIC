@@ -9,6 +9,7 @@ import {PrintExpr} from "../../../STL/AST/Expressions/printexpr";
 import {ConditionalExpr} from "../../Expressions/Conditional/conditionalexpr";
 import {FunctionExpr} from "../../Expressions/Functions/functionexpr";
 import {FunctionDeclarationExpr} from "../../Expressions/Functions/functiondeclarationexpr";
+import {ReturnExpr} from "../../Expressions/Functions/returnexpr";
 
 export interface IExprVisitor{
     visitNullExpr(): void;
@@ -22,6 +23,7 @@ export interface IExprVisitor{
 
     visitFunctionExpr(expr: FunctionExpr): void;
     visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void;
+    visitReturnExpr(expr: ReturnExpr): void;
 
     visitPrintExp(expr: PrintExpr): void;
     visitArithmeticExpr(expr: ArithmeticExpr): void;

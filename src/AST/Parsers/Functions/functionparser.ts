@@ -4,7 +4,6 @@ import {Queue} from "../../../Data/queue";
 import {Expr} from "../../Expressions/expr";
 import {functionTryParse} from "../../../Data/Helpers/tryparse";
 import {FunctionExpr} from "../../Expressions/Functions/functionexpr";
-import {ConstantExpr} from "../../Expressions/constantexpr";
 import {Tokens} from "../../Tokens/tokens";
 
 export class FunctionParser extends ExpressionParser{
