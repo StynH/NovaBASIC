@@ -212,7 +212,15 @@ export class Interpreter implements IExprVisitor {
         let loopValue = this.memoryTable.getVariable(variable)?.value;
         while(loopValue != condition && !this.breakCalled){
             for(const innerExpr of expr.exprTree){
-                this.executeExpr(innerExpr);
+                const result = this.executeExpr(innerExpr);
+                if(this.returnCalled){
+                    this.result = result;
+                    break;
+                }
+            }
+
+            if(this.returnCalled){
+                break;
             }
 
             const step = this.executeExpr(expr.step);
