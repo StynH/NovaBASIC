@@ -42,7 +42,7 @@ export class Interpreter implements IExprVisitor {
         this.gc = new GarbageCollector(this.memoryTable, this.functionTable);
         this.scopeManager = new ScopeManager();
 
-        this.printer = new ConsolePrinter();
+        this.printer = new ConsolePrinter(this);
 
         this.result = null;
 
@@ -120,8 +120,7 @@ export class Interpreter implements IExprVisitor {
     }
 
     public visitPrintExp(expr: PrintExpr): void {
-        const interpolation = expr.interpolationExpr != null ? this.executeExpr(expr.interpolationExpr) : null;
-        this.printer.print(expr.value, interpolation);
+        this.printer.print(expr);
     }
 
     public visitArithmeticExpr(expr: ArithmeticExpr): void {
@@ -234,7 +233,7 @@ export class Interpreter implements IExprVisitor {
         this.functionTable.debug();
     }
 
-    private executeExpr(expr: Expr): any{
+    public executeExpr(expr: Expr): any{
         expr.accept(this);
         return this.result;
     }

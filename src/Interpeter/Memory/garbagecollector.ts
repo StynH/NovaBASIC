@@ -5,17 +5,21 @@ export class GarbageCollector{
 
     constructor(
         private memoryTable: MemoryTable,
-        private functionTable: FunctionTable
+        private functionTable: FunctionTable,
+        private debugging: boolean = false
     ) {
     }
 
     public destroyScope(scope: string): void{
         const removedVariables = this.memoryTable.removeVariablesByScope(scope);
-        if(removedVariables.length > 0){
-            console.log(`GC: Removed these variables [${removedVariables.map(variable => variable.name).join(', ')}].`)
-        }
-        else{
-            console.log(`GC: No variables removed for scope.`)
+
+        if(this.debugging){
+            if(removedVariables.length > 0){
+                console.log(`GC: Removed these variables [${removedVariables.map(variable => variable.name).join(', ')}].`)
+            }
+            else{
+                console.log(`GC: No variables removed for scope.`)
+            }
         }
     }
 }

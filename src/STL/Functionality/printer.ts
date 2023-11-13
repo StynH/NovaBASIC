@@ -1,18 +1,31 @@
+import {Interpreter} from "../../Interpeter/interpreter";
+import {PrintExpr} from "../AST/Expressions/printexpr";
+
 export interface IPrinter{
-    print(value: string, interpolation: any | null): void;
+    print(expr: PrintExpr): void;
 }
 
 export class ConsolePrinter implements IPrinter{
 
-    public print(value: string, interpolation: any | null = null): void {
-        if(interpolation != null && value.includes("#{0}")){
-            value = value.replace("#{0}", interpolation);
-        }
-        else if(interpolation != null){
-            value = `"${value.substring(1, value.length - 1)}${interpolation}"`;
-        }
+    private context: Interpreter
 
-        console.log(value);
+    constructor(context: Interpreter) {
+        this.context = context;
     }
 
+    public print(expr: PrintExpr): void {
+        const interpolation = [];
+        for (const intExpr of expr.interpolation) {
+            interpolation.push(this.context.executeExpr(intExpr));
+        }
+
+        console.log(this.replacePlaceholders(expr.value, interpolation));
+    }
+
+    private replacePlaceholders(template: string, values: string[]): string {
+        return template.replace(/#\{(\d+)}/g, (match, index) => {
+            const value = values[parseInt(index)];
+            return value !== undefined ? value : match;
+        });
+    }
 }

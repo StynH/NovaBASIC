@@ -5,7 +5,7 @@ export class PrintExpr extends Expr{
 
     public constructor(
         public value: string,
-        public interpolationExpr: Expr | null = null
+        public interpolation: Expr[]
     ) {
         super();
     }

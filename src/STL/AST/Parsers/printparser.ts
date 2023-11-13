@@ -16,12 +16,19 @@ export class PrintParser extends ExpressionParser{
 
     public parse(_token: string): Expr {
         const value = this.tokens.pop() as string;
-        if(this.tokens.peek() == Tokens.COMMA){
-            this.tokens.pop();
-            return new PrintExpr(value, this.context.parseExpression())
+        const interpolation = [];
+
+        while(this.tokens.length() > 0){
+            if(this.tokens.peek() == Tokens.COMMA){
+                this.tokens.pop();
+                interpolation.push(this.context.parseExpression());
+            }
+            else{
+                break;
+            }
         }
 
-        return new PrintExpr(value);
+        return new PrintExpr(value, interpolation);
     }
 
 }
