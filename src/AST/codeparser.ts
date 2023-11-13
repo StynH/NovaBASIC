@@ -122,6 +122,12 @@ export class CodeParser{
                 .parse(token);
         }
 
+        if(token === Tokens.FOR){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.FOR_LOOP)
+                .parse(token);
+        }
+
         const isFunction= functionTryParse(token)[0];
         if(isFunction){
             return this.parserFactory

@@ -9,6 +9,7 @@ import {ConditionalParser} from "../conditionalparser";
 import {FunctionDeclarationParser} from "../Functions/functiondeclarationparser";
 import {FunctionParser} from "../Functions/functionparser";
 import {ReturnParser} from "../Functions/returnparser";
+import {ForLoopParser} from "../Loops/forloopparser";
 
 type EnumDictionary<T extends string | symbol | number, U> = {
     [K in T]: U;
@@ -22,7 +23,8 @@ export enum ParsingType{
     CONDITIONAL,
     FUNCTION,
     FUNCTION_DECLARATION,
-    RETURN
+    RETURN,
+    FOR_LOOP
 }
 
 export class ParserFactory{
@@ -62,6 +64,9 @@ export class ParserFactory{
                     break;
                 case ParsingType.RETURN:
                     this.parsers[parsingType] = new ReturnParser(this.context, this.tokens);
+                    break;
+                case ParsingType.FOR_LOOP:
+                    this.parsers[parsingType] = new ForLoopParser(this.context, this.tokens);
                     break;
             }
         }
