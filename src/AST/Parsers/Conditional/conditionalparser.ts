@@ -1,9 +1,9 @@
-import {ExpressionParser} from "./expressionparser";
-import {CodeParser} from "../codeparser";
-import {Queue} from "../../Data/queue";
-import {Expr} from "../Expressions/expr";
-import {Tokens} from "../Tokens/tokens";
-import {ConditionalExpr} from "../Expressions/Conditional/conditionalexpr";
+import {ExpressionParser} from "../expressionparser";
+import {CodeParser} from "../../codeparser";
+import {Queue} from "../../../Data/queue";
+import {Expr} from "../../Expressions/expr";
+import {Tokens} from "../../Tokens/tokens";
+import {ConditionalExpr} from "../../Expressions/Conditional/conditionalexpr";
 
 export class ConditionalParser extends ExpressionParser{
 

@@ -19,6 +19,7 @@ import {GarbageCollector} from "./Memory/garbagecollector";
 import {ReturnExpr} from "../AST/Expressions/Functions/returnexpr";
 import {ForLoopExpr} from "../AST/Expressions/Loops/forloopexpr";
 import {ScopeManager} from "./Memory/scopemanager";
+import {GuardExpr} from "../AST/Expressions/Conditional/guardexpr";
 
 export class Interpreter implements IExprVisitor {
 
@@ -39,7 +40,7 @@ export class Interpreter implements IExprVisitor {
     public constructor() {
         this.memoryTable = new MemoryTable();
         this.functionTable = new FunctionTable();
-        this.gc = new GarbageCollector(this.memoryTable, this.functionTable);
+        this.gc = new GarbageCollector(this.memoryTable, this.functionTable, true);
         this.scopeManager = new ScopeManager();
 
         this.printer = new ConsolePrinter(this);
@@ -149,12 +150,16 @@ export class Interpreter implements IExprVisitor {
     }
 
     public visitConditionalExpr(expr: ConditionalExpr): void {
+        this.scopeManager.addScope("IF");
+
         const result = this.executeExpr(expr.condition);
         if(result == true){
             for (const subExpr of expr.trueExprTree) {
                 this.executeExpr(subExpr);
             }
         }
+
+        this.scopeManager.popScope();
     }
 
     public visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void {
@@ -230,6 +235,19 @@ export class Interpreter implements IExprVisitor {
         }
 
         this.gc.destroyScope(this.scopeManager.getScope());
+        this.scopeManager.popScope();
+    }
+
+    public visitGuardCondition(expr: GuardExpr): void {
+        this.scopeManager.addScope("GUARD");
+
+        const result = this.executeExpr(expr.condition);
+        if(result == false){
+            for (const subExpr of expr.failExprTree) {
+                this.executeExpr(subExpr);
+            }
+        }
+
         this.scopeManager.popScope();
     }
 

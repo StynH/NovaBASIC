@@ -31,6 +31,9 @@ export class Tokens {
     @Token() public static readonly ENDIF = "ENDIF";
     @Token() public static readonly SUB = "SUB";
     @Token() public static readonly END_SUB = "ENDSUB";
+    @Token() public static readonly GUARD = "GUARD";
+    @Token() public static readonly ELSE = "ELSE";
+    @Token() public static readonly END_GUARD = "ENDGUARD";
 
     @Token(true) public static readonly FUNCTION = "[a-zA-Z_$][a-zA-Z0-9_$]*\\(";
     @Token() public static readonly OPENING_PARENTHESIS = '(';

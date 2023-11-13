@@ -5,11 +5,12 @@ import {VariableDeclarationParser} from "../variabledeclarationparser";
 import {ArithmeticParser} from "../../../STL/AST/Parsers/arithmeticparser";
 import {VariableParser} from "../variableparser";
 import {PrintParser} from "../../../STL/AST/Parsers/printparser";
-import {ConditionalParser} from "../conditionalparser";
+import {ConditionalParser} from "../Conditional/conditionalparser";
 import {FunctionDeclarationParser} from "../Functions/functiondeclarationparser";
 import {FunctionParser} from "../Functions/functionparser";
 import {ReturnParser} from "../Functions/returnparser";
 import {ForLoopParser} from "../Loops/forloopparser";
+import {GuardParser} from "../Conditional/guardparser";
 
 type EnumDictionary<T extends string | symbol | number, U> = {
     [K in T]: U;
@@ -24,7 +25,8 @@ export enum ParsingType{
     FUNCTION,
     FUNCTION_DECLARATION,
     RETURN,
-    FOR_LOOP
+    FOR_LOOP,
+    GUARD
 }
 
 export class ParserFactory{
@@ -67,6 +69,9 @@ export class ParserFactory{
                     break;
                 case ParsingType.FOR_LOOP:
                     this.parsers[parsingType] = new ForLoopParser(this.context, this.tokens);
+                    break;
+                case ParsingType.GUARD:
+                    this.parsers[parsingType] = new GuardParser(this.context, this.tokens);
                     break;
             }
         }

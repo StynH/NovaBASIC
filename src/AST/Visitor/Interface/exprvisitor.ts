@@ -11,6 +11,7 @@ import {FunctionExpr} from "../../Expressions/Functions/functionexpr";
 import {FunctionDeclarationExpr} from "../../Expressions/Functions/functiondeclarationexpr";
 import {ReturnExpr} from "../../Expressions/Functions/returnexpr";
 import {ForLoopExpr} from "../../Expressions/Loops/forloopexpr";
+import {GuardExpr} from "../../Expressions/Conditional/guardexpr";
 
 export interface IExprVisitor{
     visitNullExpr(): void;
@@ -21,6 +22,7 @@ export interface IExprVisitor{
     visitVariableValueChangeExpr(expr: VariableValueChangeExpr): void;
 
     visitConditionalExpr(expr: ConditionalExpr): void;
+    visitGuardCondition(expr: GuardExpr): void;
 
     visitFunctionExpr(expr: FunctionExpr): void;
     visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void;

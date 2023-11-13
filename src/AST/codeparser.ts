@@ -106,6 +106,12 @@ export class CodeParser{
                 .parse(token);
         }
 
+        if(token === Tokens.GUARD){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.GUARD)
+                .parse(token);
+        }
+
         if(token === Tokens.NULL){
             return new NullExpr();
         }
