@@ -71,6 +71,9 @@ export class Interpreter implements IExprVisitor {
             case Tokens.EQUALS:
                 this.result = lhs === rhs;
                 break;
+            case Tokens.NOT_EQUALS:
+                this.result = lhs !== rhs;
+                break;
             case Tokens.GTE:
                 this.result = lhs >= rhs;
                 break;

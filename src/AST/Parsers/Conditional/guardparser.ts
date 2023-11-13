@@ -22,7 +22,7 @@ export class GuardParser extends ExpressionParser{
             this.tokens.pop();
         }
         else{
-            throw new Error("Malformed GUARD statement, missing THEN.");
+            throw new Error("Malformed GUARD statement, missing ELSE.");
         }
 
         let ifStatementCorrectlyTerminated = false;

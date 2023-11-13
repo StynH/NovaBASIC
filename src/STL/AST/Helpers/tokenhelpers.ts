@@ -23,6 +23,7 @@ export class TokenHelpers {
             || token === Tokens.MULTIPLY
             || token === Tokens.DIVIDE
             || token ==  Tokens.EQUALS
+            || token ==  Tokens.NOT_EQUALS
             || token === Tokens.GTE
             || token === Tokens.LTE
             || token === Tokens.LT

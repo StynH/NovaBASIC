@@ -15,6 +15,7 @@ export class Tokens {
     @Token() public static readonly GT = ">"
     @Token() public static readonly LT = "<"
     @Token() public static readonly EQUALS = '==';
+    @Token() public static readonly NOT_EQUALS = '!=';
     @Token() public static readonly SET = '=';
     @Token() public static readonly OPENING_BRACKET = '[';
     @Token() public static readonly CLOSING_BRACKET = ']';
