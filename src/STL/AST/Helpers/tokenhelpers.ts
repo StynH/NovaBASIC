@@ -28,6 +28,8 @@ export class TokenHelpers {
             || token === Tokens.LTE
             || token === Tokens.LT
             || token === Tokens.GT
+            //STL
+            || token === Tokens.MATCHES_STL
     }
 
     public static isStlArithmeticToken(token: string): boolean{

@@ -20,6 +20,7 @@ import {ReturnExpr} from "../AST/Expressions/Functions/returnexpr";
 import {ForLoopExpr} from "../AST/Expressions/Loops/forloopexpr";
 import {ScopeManager} from "./Memory/scopemanager";
 import {GuardExpr} from "../AST/Expressions/Conditional/guardexpr";
+import {RegexTester} from "../STL/Functionality/regextester";
 
 export class Interpreter implements IExprVisitor {
 
@@ -31,6 +32,7 @@ export class Interpreter implements IExprVisitor {
     private scopeManager: ScopeManager;
 
     private printer: IPrinter;
+    private regexTester: RegexTester;
 
     private result: any | null;
 
@@ -44,6 +46,7 @@ export class Interpreter implements IExprVisitor {
         this.scopeManager = new ScopeManager();
 
         this.printer = new ConsolePrinter(this);
+        this.regexTester = new RegexTester();
 
         this.result = null;
 
@@ -85,6 +88,9 @@ export class Interpreter implements IExprVisitor {
                 break;
             case Tokens.GT:
                 this.result = lhs > rhs;
+                break;
+            case Tokens.MATCHES_STL:
+                this.result = this.regexTester.testRegex(rhs, lhs);
                 break;
             default:
                 throw new Error(`Unknown arithmetic ${expr.condition}.`);

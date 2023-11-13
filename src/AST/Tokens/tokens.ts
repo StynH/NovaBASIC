@@ -54,6 +54,7 @@ export class Tokens {
     @Token() public static readonly MULTIPLY_STL = "MULTIPLY";
     @Token() public static readonly DIVIDE_STL = "DIVIDE";
     @Token() public static readonly PRINT_STL = "PRINT";
+    @Token() public static readonly MATCHES_STL = "MATCHES";
 
     //Patterns
     @Token(true) public static readonly AZ09 = "[a-zA-Z0-9_]+";
