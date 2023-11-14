@@ -45,6 +45,8 @@ export class CodeParser{
         while (this.tokens.length() > 0){
             parsed.expressions.push(this.parseExpression());
         }
+
+        parsed.MoveFunctionsToTheFront();
         return parsed;
     }
 
@@ -100,6 +102,12 @@ export class CodeParser{
                 .parse(token);
         }
 
+        if(token.startsWith(Tokens.ARRAY_SIZE_STL)){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.ARRAY_SIZE)
+                .parse(token);
+        }
+
         if(token === Tokens.IF){
             return this.parserFactory
                 .getExpressionParser(ParsingType.CONDITIONAL)
@@ -134,6 +142,12 @@ export class CodeParser{
                 .parse(token);
         }
 
+        if(token === Tokens.OPENING_BRACKET){
+            return this.parserFactory
+                .getExpressionParser(ParsingType.ARRAY)
+                .parse(token);
+        }
+
         const isFunction= functionTryParse(token)[0];
         if(isFunction){
             return this.parserFactory
@@ -143,6 +157,11 @@ export class CodeParser{
 
         const isVariable= variableTryParse(token)[0];
         if(isVariable){
+            if(this.tokens.peek() === Tokens.OPENING_BRACKET){
+                return this.parserFactory
+                    .getExpressionParser(ParsingType.ARRAY)
+                    .parse(token);
+            }
             return this.parserFactory
                 .getExpressionParser(ParsingType.VARIABLE)
                 .parse(token);

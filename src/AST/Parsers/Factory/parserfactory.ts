@@ -11,6 +11,8 @@ import {FunctionParser} from "../Functions/functionparser";
 import {ReturnParser} from "../Functions/returnparser";
 import {ForLoopParser} from "../Loops/forloopparser";
 import {GuardParser} from "../Conditional/guardparser";
+import {ArrayParser} from "../Collections/arrayparser";
+import {ArraySizeParser} from "../../../STL/AST/Parsers/arraysizeparser";
 
 type EnumDictionary<T extends string | symbol | number, U> = {
     [K in T]: U;
@@ -26,7 +28,9 @@ export enum ParsingType{
     FUNCTION_DECLARATION,
     RETURN,
     FOR_LOOP,
-    GUARD
+    GUARD,
+    ARRAY,
+    ARRAY_SIZE
 }
 
 export class ParserFactory{
@@ -72,6 +76,12 @@ export class ParserFactory{
                     break;
                 case ParsingType.GUARD:
                     this.parsers[parsingType] = new GuardParser(this.context, this.tokens);
+                    break;
+                case ParsingType.ARRAY:
+                    this.parsers[parsingType] = new ArrayParser(this.context, this.tokens);
+                    break;
+                case ParsingType.ARRAY_SIZE:
+                    this.parsers[parsingType] = new ArraySizeParser(this.context, this.tokens);
                     break;
             }
         }

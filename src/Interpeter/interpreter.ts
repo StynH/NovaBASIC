@@ -21,6 +21,10 @@ import {ForLoopExpr} from "../AST/Expressions/Loops/forloopexpr";
 import {ScopeManager} from "./Memory/scopemanager";
 import {GuardExpr} from "../AST/Expressions/Conditional/guardexpr";
 import {RegexTester} from "../STL/Functionality/regextester";
+import {ArrayOperationExpr} from "../AST/Expressions/Collections/arrayoperationexpr";
+import {ArrayAssignmentExpr} from "../AST/Expressions/Collections/arrayassignmentexpr";
+import {ArrayDeclarationExpr} from "../AST/Expressions/Collections/arraydeclarationexpr";
+import {ArraySizeExpr} from "../STL/AST/Expressions/arraysizeexpr";
 
 export class Interpreter implements IExprVisitor {
 
@@ -220,11 +224,11 @@ export class Interpreter implements IExprVisitor {
     public visitForLoopExpr(expr: ForLoopExpr): void {
         this.scopeManager.addScope("FOR_LOOP");
 
-        const variable = this.executeExpr(expr.init);
+        const variable = expr.init instanceof VariableExpr ? expr.init.value : this.executeExpr(expr.init);
         const condition = this.executeExpr(expr.to);
 
-        let loopValue = this.memoryTable.getVariable(variable)?.value;
-        while(loopValue != condition && !this.breakCalled){
+        let loopValue = this.getVariableValueScopedOrGlobally(variable);
+        while(loopValue < condition && !this.breakCalled){
             for(const innerExpr of expr.exprTree){
                 const result = this.executeExpr(innerExpr);
                 if(this.returnCalled){
@@ -238,9 +242,9 @@ export class Interpreter implements IExprVisitor {
             }
 
             const step = this.executeExpr(expr.step);
-            const value = this.memoryTable.getVariable(variable)?.value + step;
-            this.memoryTable.setVariableValue(variable, value);
-            loopValue = this.memoryTable.getVariable(variable)?.value;
+            const value = this.getVariableValueScopedOrGlobally(variable) + step;
+            this.setVariableValueScopedOrGlobally(variable, value);
+            loopValue = this.getVariableValueScopedOrGlobally(variable);
         }
 
         this.gc.destroyScope(this.scopeManager.getScope());
@@ -260,6 +264,57 @@ export class Interpreter implements IExprVisitor {
         this.scopeManager.popScope();
     }
 
+    public visitArrayAssignmentExpr(expr: ArrayAssignmentExpr): void {
+        const variable = this.getVariableValueScopedOrGlobally(expr.variable);
+        const indexer = this.executeExpr(expr.indexer);
+        const value = this.executeExpr(expr.value);
+
+        if(!Array.isArray(variable)){
+            throw new Error(`${expr.variable} is not an array yet indexed like one.`)
+        }
+
+        if((variable as any[]).length > indexer){
+            variable[indexer] = value;
+        }
+        else{
+            throw new Error(`Unknown index ${indexer} for array ${expr.variable}.`);
+        }
+    }
+
+    public visitArrayDeclarationExpr(expr: ArrayDeclarationExpr): void {
+        const newArray = [];
+        for(const initExpr of expr.initializerList){
+            newArray.push(this.executeExpr(initExpr));
+        }
+        this.result = newArray;
+    }
+
+    public visitArrayOperationExpr(expr: ArrayOperationExpr): void {
+        const variable = this.getVariableValueScopedOrGlobally(this.executeExpr(expr.variable));
+        const indexer = this.executeExpr(expr.indexer);
+
+        if((variable as any[]).length > indexer){
+            this.result = variable[indexer];
+        }
+        else{
+            throw new Error(`Unknown index ${indexer} for array ${variable.name}.`);
+        }
+    }
+
+    public visitArraySizeExpr(expr: ArraySizeExpr): void {
+        const variable = this.getVariableValueScopedOrGlobally(expr.variable);
+        const size = this.executeExpr(expr.size);
+
+        if(!Array.isArray(variable)){
+            throw new Error(`${expr.variable} is not an array, and cannot use ${Tokens.ARRAY_SIZE_STL}.`)
+        }
+
+        const array = variable as any[];
+        while(array.length < size){
+            array.push(null);
+        }
+    }
+
     public debug(): void{
         console.log("--Dumping memory table--")
         this.memoryTable.debug();
@@ -274,31 +329,41 @@ export class Interpreter implements IExprVisitor {
     }
 
     private setVariableValueScopedOrGlobally(name: string, value: any): void{
-        const scopedName = this.scopeManager.toScopedName(name);
-        try{
-            this.memoryTable.setVariableValue(scopedName, value);
-        }
-        catch (e){
-            try{
-                this.memoryTable.setVariableValue(`_${Interpreter.GLOBAL_SCOPE}_${name}`, value);
-            }
-            catch (e){
-                throw Error(`Variable with name '${name}' not found.`);
-            }
-        }
+        const variable = this.getVariableScopedOrGlobally(name);
+        this.memoryTable.setVariableValue(variable.name, value);
     }
 
-    private setVariableValueScoped(name: string, value: any): void{
-        const scopedName = this.scopeManager.toScopedName(name);
-        try{
-            this.memoryTable.setVariableValue(scopedName, value);
+    private getVariableScopedOrGlobally(name: string): any{
+        const variable = this.memoryTable.getVariable(name);
+        if(variable != null){
+            return variable;
         }
-        catch (e){
-            throw Error(`Variable with name '${name}' not found.`);
+
+        let scopeAmount = this.scopeManager.amountOfScopes();
+        while(scopeAmount > 0){
+            const scopedName = this.scopeManager.toScopedName(name, scopeAmount);
+            const variable = this.memoryTable.getVariable(scopedName);
+            if(variable != null){
+                return variable;
+            }
+
+            --scopeAmount;
         }
+
+        const globalVariable = this.memoryTable.getVariable(`_${Interpreter.GLOBAL_SCOPE}_${name}`);
+        if(globalVariable != null){
+            return globalVariable;
+        }
+
+        throw Error(`Variable with name '${name}' not found.`);
     }
 
     private getVariableValueScopedOrGlobally(name: string): any{
+        const variable = this.memoryTable.getVariable(name);
+        if(variable != null){
+            return variable.value;
+        }
+
         let scopeAmount = this.scopeManager.amountOfScopes();
         while(scopeAmount > 0){
             const scopedName = this.scopeManager.toScopedName(name, scopeAmount);

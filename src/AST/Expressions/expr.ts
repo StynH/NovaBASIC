@@ -8,3 +8,6 @@ export  abstract class Expr implements IExprVisitable
 
     public abstract accept(visitor: IExprVisitor): void;
 }
+
+
+export type ExprList = Expr[];

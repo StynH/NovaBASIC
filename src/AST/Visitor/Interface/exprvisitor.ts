@@ -12,6 +12,10 @@ import {FunctionDeclarationExpr} from "../../Expressions/Functions/functiondecla
 import {ReturnExpr} from "../../Expressions/Functions/returnexpr";
 import {ForLoopExpr} from "../../Expressions/Loops/forloopexpr";
 import {GuardExpr} from "../../Expressions/Conditional/guardexpr";
+import {ArrayOperationExpr} from "../../Expressions/Collections/arrayoperationexpr";
+import {ArrayDeclarationExpr} from "../../Expressions/Collections/arraydeclarationexpr";
+import {ArrayAssignmentExpr} from "../../Expressions/Collections/arrayassignmentexpr";
+import {ArraySizeExpr} from "../../../STL/AST/Expressions/arraysizeexpr";
 
 export interface IExprVisitor{
     visitNullExpr(): void;
@@ -24,6 +28,10 @@ export interface IExprVisitor{
     visitConditionalExpr(expr: ConditionalExpr): void;
     visitGuardCondition(expr: GuardExpr): void;
 
+    visitArrayOperationExpr(expr: ArrayOperationExpr): void;
+    visitArrayDeclarationExpr(expr: ArrayDeclarationExpr): void;
+    visitArrayAssignmentExpr(expr: ArrayAssignmentExpr): void;
+
     visitFunctionExpr(expr: FunctionExpr): void;
     visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void;
     visitReturnExpr(expr: ReturnExpr): void;
@@ -31,6 +39,7 @@ export interface IExprVisitor{
 
     visitPrintExp(expr: PrintExpr): void;
     visitArithmeticExpr(expr: ArithmeticExpr): void;
+    visitArraySizeExpr(expr: ArraySizeExpr): void;
 
     visitConstantExpr<T>(expr: ConstantExpr<T>): void;
 }

@@ -1,11 +1,11 @@
-import {Expr} from "../expr";
+import {Expr, ExprList} from "../expr";
 import {IExprVisitor} from "../../Visitor/Interface/exprvisitor";
 
 export class FunctionExpr extends Expr{
 
     public constructor(
         public value: string,
-        public parameters: Expr[]
+        public parameters: ExprList
     ) {
         super();
     }

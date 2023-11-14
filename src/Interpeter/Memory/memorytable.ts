@@ -1,5 +1,5 @@
 
-export type StoredVariable = {name: string, value: any};
+export type StoredVariable = {name: string, value: any | any[]};
 
 export class MemoryTable{
 
