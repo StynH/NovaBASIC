@@ -5,7 +5,8 @@ export class ConditionalExpr extends Expr{
 
     public constructor(
         public condition: Expr,
-        public trueExprTree: ExprList
+        public trueExprTree: ExprList,
+        public elseExpr: Expr | null
     ) {
         super();
     }

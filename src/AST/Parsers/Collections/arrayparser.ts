@@ -18,12 +18,21 @@ export class ArrayParser extends ExpressionParser{
     }
 
     public parse(_token: string): Expr {
+        let indexer: Expr | ExprList;
         if(_token != Tokens.OPENING_BRACKET
             && this.tokens.peek() == Tokens.OPENING_BRACKET){
             const variable = _token;
             this.tokens.pop();
 
-            const indexer = this.context.parseExpression();
+            indexer = this.context.parseExpression();
+            if(this.tokens.peek() == Tokens.COMMA){
+                indexer = [indexer];
+                while(this.tokens.peek() == Tokens.COMMA){
+                    this.tokens.pop();
+                    indexer.push(this.context.parseExpression());
+                }
+            }
+
             if(this.tokens.peek() == Tokens.CLOSING_BRACKET){
                 this.tokens.pop();
             }

@@ -34,6 +34,7 @@ export class Tokens {
     @Token() public static readonly END_SUB = "ENDSUB";
     @Token() public static readonly GUARD = "GUARD";
     @Token() public static readonly ELSE = "ELSE";
+    @Token() public static readonly ELSEIF = "ELSEIF";
     @Token() public static readonly END_GUARD = "ENDGUARD";
 
     @Token(true) public static readonly FUNCTION = "[a-zA-Z_$][a-zA-Z0-9_$]*\\(";

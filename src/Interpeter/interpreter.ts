@@ -165,13 +165,22 @@ export class Interpreter implements IExprVisitor {
     public visitConditionalExpr(expr: ConditionalExpr): void {
         this.scopeManager.addScope("IF");
 
-        const result = this.executeExpr(expr.condition);
-        if(result == true){
-            for (const subExpr of expr.trueExprTree) {
+        let currentExpr: ConditionalExpr | null = expr;
+        let result = false;
+        while(!result && currentExpr != null){
+            result = this.executeExpr(currentExpr.condition);
+            if(!result){
+                currentExpr = currentExpr.elseExpr as ConditionalExpr;
+            }
+        }
+
+        if(result && currentExpr != null){
+            for (const subExpr of currentExpr.trueExprTree) {
                 this.executeExpr(subExpr);
             }
         }
 
+        this.gc.destroyScope(this.scopeManager.getScope());
         this.scopeManager.popScope();
     }
 
@@ -229,6 +238,7 @@ export class Interpreter implements IExprVisitor {
 
         let loopValue = this.getVariableValueScopedOrGlobally(variable);
         while(loopValue < condition && !this.breakCalled){
+            this.scopeManager.addScope("INNER");
             for(const innerExpr of expr.exprTree){
                 const result = this.executeExpr(innerExpr);
                 if(this.returnCalled){
@@ -245,6 +255,9 @@ export class Interpreter implements IExprVisitor {
             const value = this.getVariableValueScopedOrGlobally(variable) + step;
             this.setVariableValueScopedOrGlobally(variable, value);
             loopValue = this.getVariableValueScopedOrGlobally(variable);
+
+            this.gc.destroyScope(this.scopeManager.getScope());
+            this.scopeManager.popScope();
         }
 
         this.gc.destroyScope(this.scopeManager.getScope());
@@ -266,18 +279,38 @@ export class Interpreter implements IExprVisitor {
 
     public visitArrayAssignmentExpr(expr: ArrayAssignmentExpr): void {
         const variable = this.getVariableValueScopedOrGlobally(expr.variable);
-        const indexer = this.executeExpr(expr.indexer);
         const value = this.executeExpr(expr.value);
 
         if(!Array.isArray(variable)){
             throw new Error(`${expr.variable} is not an array yet indexed like one.`)
         }
 
-        if((variable as any[]).length > indexer){
-            variable[indexer] = value;
+        let indexer;
+        if(Array.isArray(expr.indexer)){
+            indexer = [];
+            for(const indexExpr of expr.indexer){
+                indexer.push(this.executeExpr(indexExpr));
+            }
+
+            let subResult = variable;
+            for(let i = 0; i < indexer.length - 1; ++i){
+                if((subResult as any[]).length > indexer[i]){
+                    subResult = subResult[indexer[i]];
+                }
+                else{
+                    throw new Error(`Unknown index ${indexer} for array ${subResult}.`);
+                }
+            }
+            subResult[indexer[indexer.length - 1]] = value;
         }
         else{
-            throw new Error(`Unknown index ${indexer} for array ${expr.variable}.`);
+            indexer = this.executeExpr(expr.indexer);
+            if((variable as any[]).length > indexer){
+                variable[indexer] = value;
+            }
+            else{
+                throw new Error(`Unknown index ${indexer} for array ${variable}.`);
+            }
         }
     }
 
@@ -291,13 +324,32 @@ export class Interpreter implements IExprVisitor {
 
     public visitArrayOperationExpr(expr: ArrayOperationExpr): void {
         const variable = this.getVariableValueScopedOrGlobally(this.executeExpr(expr.variable));
-        const indexer = this.executeExpr(expr.indexer);
+        let indexer;
+        if(Array.isArray(expr.indexer)){
+            indexer = [];
+            for(const indexExpr of expr.indexer){
+                indexer.push(this.executeExpr(indexExpr));
+            }
 
-        if((variable as any[]).length > indexer){
-            this.result = variable[indexer];
+            let subResult = variable;
+            for(let i = 0; i < indexer.length; ++i){
+                if((subResult as any[]).length > indexer[i]){
+                    subResult = subResult[indexer[i]];
+                }
+                else{
+                    throw new Error(`Unknown index ${indexer} for array ${subResult}.`);
+                }
+            }
+            this.result = subResult;
         }
         else{
-            throw new Error(`Unknown index ${indexer} for array ${variable.name}.`);
+            indexer = this.executeExpr(expr.indexer);
+            if((variable as any[]).length > indexer){
+                this.result = variable[indexer];
+            }
+            else{
+                throw new Error(`Unknown index ${indexer} for array ${variable.name}.`);
+            }
         }
     }
 

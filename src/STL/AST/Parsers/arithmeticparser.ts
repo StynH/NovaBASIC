@@ -21,7 +21,11 @@ export class ArithmeticParser extends ExpressionParser{
             throw new Error(`Missing BY keyword for ${_token}.`)
         }
 
-        return new ArithmeticExpr(variable, TokenHelpers.StlToOperator(_token), this.context.parseExpression());
+        const expr = this.context.parseExpression();
+        if(expr instanceof ArithmeticExpr){
+            new ArithmeticExpr(expr, TokenHelpers.StlToOperator(_token), variable)
+        }
+        return new ArithmeticExpr(variable, TokenHelpers.StlToOperator(_token), expr);
     }
 
 }

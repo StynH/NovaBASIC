@@ -1,11 +1,11 @@
-import {Expr} from "../expr";
+import {Expr, ExprList} from "../expr";
 import {IExprVisitor} from "../../Visitor/Interface/exprvisitor";
 
 export class ArrayAssignmentExpr extends Expr{
 
     public constructor(
         public variable: string,
-        public indexer: Expr,
+        public indexer: Expr | ExprList,
         public value: Expr
     ) {
         super();
