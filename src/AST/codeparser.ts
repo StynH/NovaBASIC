@@ -16,6 +16,7 @@ import {ParsedCode} from "./parsedcode";
 import {ParserFactory, ParsingType} from "./Parsers/Factory/parserfactory";
 import {TokenHelpers} from "../STL/AST/Helpers/tokenhelpers";
 import {Tokens} from "./Tokens/tokens";
+import {balanceExpr} from "../Data/Helpers/arithmetichelpers";
 
 export class CodeParser{
 
@@ -56,6 +57,7 @@ export class CodeParser{
         if(TokenHelpers.isArithmeticToken(operator)){
             this.tokens.pop();
             expr = new BinaryExpr(expr, operator, this.parseExpression());
+            expr = balanceExpr(expr);
         }
 
         return expr;

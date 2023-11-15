@@ -4,7 +4,7 @@ import {TernaryExpr} from "../AST/Expressions/ternaryExpr";
 import {VariableExpr} from "../AST/Expressions/variableexpr";
 import {VariableDeclarationExpr} from "../AST/Expressions/variabledeclarationexpr";
 import {ConstantExpr} from "../AST/Expressions/constantexpr";
-import {ConsolePrinter, IPrinter} from "../STL/Functionality/printer";
+import {IPrinter} from "../STL/Functionality/printer";
 import {MemoryTable} from "./Memory/memorytable";
 import {Expr} from "../AST/Expressions/expr";
 import {Tokens} from "../AST/Tokens/tokens";
@@ -25,6 +25,7 @@ import {ArrayOperationExpr} from "../AST/Expressions/Collections/arrayoperatione
 import {ArrayAssignmentExpr} from "../AST/Expressions/Collections/arrayassignmentexpr";
 import {ArrayDeclarationExpr} from "../AST/Expressions/Collections/arraydeclarationexpr";
 import {ArraySizeExpr} from "../STL/AST/Expressions/arraysizeexpr";
+import {TerminalPrinter} from "../STL/Functionality/terminalprinter";
 
 export class Interpreter implements IExprVisitor {
 
@@ -49,7 +50,7 @@ export class Interpreter implements IExprVisitor {
         this.gc = new GarbageCollector(this.memoryTable, this.functionTable, true);
         this.scopeManager = new ScopeManager();
 
-        this.printer = new ConsolePrinter(this);
+        this.printer = new TerminalPrinter(this, "terminalOutput");
         this.regexTester = new RegexTester();
 
         this.result = null;
@@ -74,6 +75,9 @@ export class Interpreter implements IExprVisitor {
                 break;
             case Tokens.MULTIPLY:
                 this.result = lhs * rhs;
+                break;
+            case Tokens.MODULO:
+                this.result = lhs % rhs;
                 break;
             case Tokens.EQUALS:
                 this.result = lhs === rhs;
@@ -248,6 +252,8 @@ export class Interpreter implements IExprVisitor {
             }
 
             if(this.returnCalled){
+                this.gc.destroyScope(this.scopeManager.getScope());
+                this.scopeManager.popScope();
                 break;
             }
 

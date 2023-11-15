@@ -22,6 +22,7 @@ export class TokenHelpers {
             || token === Tokens.MINUS
             || token === Tokens.MULTIPLY
             || token === Tokens.DIVIDE
+            || token === Tokens.MODULO
             || token ==  Tokens.EQUALS
             || token ==  Tokens.NOT_EQUALS
             || token === Tokens.GTE

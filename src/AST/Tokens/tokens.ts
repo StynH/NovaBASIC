@@ -6,6 +6,7 @@ export class Tokens {
     @Token() public static readonly MINUS = '-';
     @Token() public static readonly MULTIPLY = '*';
     @Token() public static readonly DIVIDE = '/';
+    @Token() public static readonly MODULO = '%';
     @Token() public static readonly POWER = '^';
     @Token() public static readonly QUESTION_MARK = '?';
     @Token() public static readonly SEMICOLON = ':';
