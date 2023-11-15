@@ -3,10 +3,10 @@ import {CodeParser} from "../../../AST/codeparser";
 import {Queue} from "../../../Data/queue";
 import {Expr} from "../../../AST/Expressions/expr";
 import {Tokens} from "../../../AST/Tokens/tokens";
-import {ArraySizeExpr} from "../Expressions/arraysizeexpr";
 import {VariableExpr} from "../../../AST/Expressions/variableexpr";
+import {LengthExpr} from "../Expressions/lengthexpr";
 
-export class ArraySizeParser extends ExpressionParser{
+export class LengthParser extends ExpressionParser{
 
     public constructor(
         context: CodeParser,
@@ -17,21 +17,19 @@ export class ArraySizeParser extends ExpressionParser{
 
     public parse(_token: string): Expr {
         if(!_token.endsWith(Tokens.OPENING_PARENTHESIS)){
-            throw new Error("Malformed ARRAY_SIZE, missing (.");
+            throw new Error(`Malformed ${Tokens.LENGTH_STL}, missing (.`);
         }
 
         const variable = this.context.parseExpression() as VariableExpr;
-        this.tokens.pop();
-        const size = this.context.parseExpression();
 
         if(this.tokens.peek() == Tokens.CLOSING_PARENTHESIS){
             this.tokens.pop();
         }
         else{
-            throw new Error("Malformed ARRAY_SIZE, missing ).");
+            throw new Error(`Malformed ${Tokens.LENGTH_STL}, missing ).`);
         }
 
-        return new ArraySizeExpr(variable.value, size);
+        return new LengthExpr(variable.value);
     }
 
 }

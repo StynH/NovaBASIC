@@ -15,7 +15,8 @@ import {GuardExpr} from "../../Expressions/Conditional/guardexpr";
 import {ArrayOperationExpr} from "../../Expressions/Collections/arrayoperationexpr";
 import {ArrayDeclarationExpr} from "../../Expressions/Collections/arraydeclarationexpr";
 import {ArrayAssignmentExpr} from "../../Expressions/Collections/arrayassignmentexpr";
-import {ArraySizeExpr} from "../../../STL/AST/Expressions/arraysizeexpr";
+import {ArrayResizeExpr} from "../../../STL/AST/Expressions/arrayresizeexpr";
+import {LengthExpr} from "../../../STL/AST/Expressions/lengthexpr";
 
 export interface IExprVisitor{
     visitNullExpr(): void;
@@ -39,7 +40,8 @@ export interface IExprVisitor{
 
     visitPrintExp(expr: PrintExpr): void;
     visitArithmeticExpr(expr: ArithmeticExpr): void;
-    visitArraySizeExpr(expr: ArraySizeExpr): void;
+    visitArrayResizeExpr(expr: ArrayResizeExpr): void;
+    visitLengthExpr(expr: LengthExpr): void;
 
     visitConstantExpr<T>(expr: ConstantExpr<T>): void;
 }

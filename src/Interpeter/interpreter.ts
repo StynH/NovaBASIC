@@ -1,15 +1,12 @@
-import {IExprVisitor} from "../AST/Visitor/Interface/exprvisitor";
 import {BinaryExpr} from "../AST/Expressions/binaryexpr";
 import {TernaryExpr} from "../AST/Expressions/ternaryExpr";
 import {VariableExpr} from "../AST/Expressions/variableexpr";
 import {VariableDeclarationExpr} from "../AST/Expressions/variabledeclarationexpr";
 import {ConstantExpr} from "../AST/Expressions/constantexpr";
-import {IPrinter} from "../STL/Functionality/printer";
 import {MemoryTable} from "./Memory/memorytable";
 import {Expr} from "../AST/Expressions/expr";
 import {Tokens} from "../AST/Tokens/tokens";
-import {VariableValueChangeExpr} from "../AST/Expressions/variablevaluechangeexpr";
-import {PrintExpr} from "../STL/AST/Expressions/printexpr";
+import {VariableValueChangeExpr} from "../AST/Expressions/variablevaluechangeexpr"
 import {ArithmeticExpr} from "../STL/AST/Expressions/arithmeticexpr";
 import {ConditionalExpr} from "../AST/Expressions/Conditional/conditionalexpr";
 import {FunctionTable, StoredFunction} from "./Memory/functiontable";
@@ -24,33 +21,39 @@ import {RegexTester} from "../STL/Functionality/regextester";
 import {ArrayOperationExpr} from "../AST/Expressions/Collections/arrayoperationexpr";
 import {ArrayAssignmentExpr} from "../AST/Expressions/Collections/arrayassignmentexpr";
 import {ArrayDeclarationExpr} from "../AST/Expressions/Collections/arraydeclarationexpr";
-import {ArraySizeExpr} from "../STL/AST/Expressions/arraysizeexpr";
-import {TerminalPrinter} from "../STL/Functionality/terminalprinter";
+import {BaseInterpreter} from "./Abstract/baseinterpreter";
+import {StandardLibraryInterpreter} from "../STL/Interpreter/standardlibraryinterpreter";
+import {PrintExpr} from "../STL/AST/Expressions/printexpr";
+import {ArrayResizeExpr} from "../STL/AST/Expressions/arrayresizeexpr";
+import {LengthExpr} from "../STL/AST/Expressions/lengthexpr";
 
-export class Interpreter implements IExprVisitor {
+export class Interpreter extends BaseInterpreter {
 
     public static readonly GLOBAL_SCOPE = "GLOBAL";
+
+    private readonly stlInterpreter: StandardLibraryInterpreter;
 
     private readonly memoryTable: MemoryTable;
     private readonly functionTable: FunctionTable;
     private gc: GarbageCollector;
     private scopeManager: ScopeManager;
 
-    private printer: IPrinter;
     private regexTester: RegexTester;
 
-    private result: any | null;
+    public result: any | null;
 
     private returnCalled: boolean;
     private breakCalled: boolean;
 
     public constructor() {
+        super();
+        this.stlInterpreter = new StandardLibraryInterpreter(this);
+
         this.memoryTable = new MemoryTable();
         this.functionTable = new FunctionTable();
         this.gc = new GarbageCollector(this.memoryTable, this.functionTable, true);
         this.scopeManager = new ScopeManager();
 
-        this.printer = new TerminalPrinter(this, "terminalOutput");
         this.regexTester = new RegexTester();
 
         this.result = null;
@@ -135,10 +138,6 @@ export class Interpreter implements IExprVisitor {
 
     public visitVariableExpr(expr: VariableExpr): void {
         this.result = this.getVariableValueScopedOrGlobally(expr.value);
-    }
-
-    public visitPrintExp(expr: PrintExpr): void {
-        this.printer.print(expr);
     }
 
     public visitArithmeticExpr(expr: ArithmeticExpr): void {
@@ -359,18 +358,17 @@ export class Interpreter implements IExprVisitor {
         }
     }
 
-    public visitArraySizeExpr(expr: ArraySizeExpr): void {
-        const variable = this.getVariableValueScopedOrGlobally(expr.variable);
-        const size = this.executeExpr(expr.size);
+    //STL
+    public visitPrintExp(expr: PrintExpr): void {
+        this.stlInterpreter.visitPrintExp(expr);
+    }
 
-        if(!Array.isArray(variable)){
-            throw new Error(`${expr.variable} is not an array, and cannot use ${Tokens.ARRAY_SIZE_STL}.`)
-        }
+    public visitArrayResizeExpr(expr: ArrayResizeExpr): void {
+        this.stlInterpreter.visitArrayResizeExpr(expr);
+    }
 
-        const array = variable as any[];
-        while(array.length < size){
-            array.push(null);
-        }
+    public visitLengthExpr(expr: LengthExpr): void {
+        this.stlInterpreter.visitLengthExpr(expr);
     }
 
     public debug(): void{
@@ -386,12 +384,12 @@ export class Interpreter implements IExprVisitor {
         return this.result;
     }
 
-    private setVariableValueScopedOrGlobally(name: string, value: any): void{
+    public setVariableValueScopedOrGlobally(name: string, value: any): void{
         const variable = this.getVariableScopedOrGlobally(name);
         this.memoryTable.setVariableValue(variable.name, value);
     }
 
-    private getVariableScopedOrGlobally(name: string): any{
+    public getVariableScopedOrGlobally(name: string): any{
         const variable = this.memoryTable.getVariable(name);
         if(variable != null){
             return variable;
@@ -416,7 +414,7 @@ export class Interpreter implements IExprVisitor {
         throw Error(`Variable with name '${name}' not found.`);
     }
 
-    private getVariableValueScopedOrGlobally(name: string): any{
+    public getVariableValueScopedOrGlobally(name: string): any{
         const variable = this.memoryTable.getVariable(name);
         if(variable != null){
             return variable.value;
@@ -441,7 +439,7 @@ export class Interpreter implements IExprVisitor {
         throw Error(`Variable with name '${name}' not found.`);
     }
 
-    private getFunctionScopedOrGlobally(name: string): StoredFunction | null{
+    public getFunctionScopedOrGlobally(name: string): StoredFunction | null{
         const scopedName = this.scopeManager.toScopedName(name);
         const func = this.functionTable.getFunction(scopedName, this.scopeManager.getScope())!;
         if(func != null){

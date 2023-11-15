@@ -4,7 +4,6 @@ import {CodeParser} from "../../codeparser";
 import {VariableDeclarationParser} from "../variabledeclarationparser";
 import {ArithmeticParser} from "../../../STL/AST/Parsers/arithmeticparser";
 import {VariableParser} from "../variableparser";
-import {PrintParser} from "../../../STL/AST/Parsers/printparser";
 import {ConditionalParser} from "../Conditional/conditionalparser";
 import {FunctionDeclarationParser} from "../Functions/functiondeclarationparser";
 import {FunctionParser} from "../Functions/functionparser";
@@ -12,15 +11,10 @@ import {ReturnParser} from "../Functions/returnparser";
 import {ForLoopParser} from "../Loops/forloopparser";
 import {GuardParser} from "../Conditional/guardparser";
 import {ArrayParser} from "../Collections/arrayparser";
-import {ArraySizeParser} from "../../../STL/AST/Parsers/arraysizeparser";
-
-type EnumDictionary<T extends string | symbol | number, U> = {
-    [K in T]: U;
-};
+import {EnumDictionary} from "../../../Data/Types/enumdictionarytype";
 
 export enum ParsingType{
     ARITHMETIC,
-    PRINT,
     VARIABLE,
     VARIABLE_DECLARATION,
     CONDITIONAL,
@@ -29,8 +23,7 @@ export enum ParsingType{
     RETURN,
     FOR_LOOP,
     GUARD,
-    ARRAY,
-    ARRAY_SIZE
+    ARRAY
 }
 
 export class ParserFactory{
@@ -50,9 +43,6 @@ export class ParserFactory{
                 case ParsingType.ARITHMETIC:
                     this.parsers[parsingType] = new ArithmeticParser(this.context, this.tokens);
                     break;
-                case ParsingType.PRINT:
-                    this.parsers[parsingType] = new PrintParser(this.context, this.tokens);
-                    break
                 case ParsingType.VARIABLE:
                     this.parsers[parsingType] = new VariableParser(this.context, this.tokens);
                     break;
@@ -79,9 +69,6 @@ export class ParserFactory{
                     break;
                 case ParsingType.ARRAY:
                     this.parsers[parsingType] = new ArrayParser(this.context, this.tokens);
-                    break;
-                case ParsingType.ARRAY_SIZE:
-                    this.parsers[parsingType] = new ArraySizeParser(this.context, this.tokens);
                     break;
             }
         }

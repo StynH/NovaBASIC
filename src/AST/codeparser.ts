@@ -17,15 +17,18 @@ import {ParserFactory, ParsingType} from "./Parsers/Factory/parserfactory";
 import {TokenHelpers} from "../STL/AST/Helpers/tokenhelpers";
 import {Tokens} from "./Tokens/tokens";
 import {balanceExpr} from "../Data/Helpers/arithmetichelpers";
+import {StandardLibraryCodeParser} from "../STL/AST/standardlibrarycodeparser";
 
 export class CodeParser{
 
     private readonly tokens: Queue<string>;
     private readonly parserFactory: ParserFactory;
+    private readonly stlCodeParser: StandardLibraryCodeParser;
 
     constructor() {
         this.tokens = new Queue<string>();
         this.parserFactory = new ParserFactory(this, this.tokens);
+        this.stlCodeParser = new StandardLibraryCodeParser(this, this.tokens);
     }
 
     public parseInput(input: string): void{
@@ -36,6 +39,7 @@ export class CodeParser{
                 ), match => match[0]
             );
 
+        console.log(Tokenization.buildRegexPattern());
         for(const match of matches){
             this.tokens.enqueue(match);
         }
@@ -86,6 +90,12 @@ export class CodeParser{
             return new ConstantExpr(boolParse);
         }
 
+        //STL
+        const stl = this.stlCodeParser.parseTerm(token);
+        if(stl != null){
+            return stl;
+        }
+
         if(token === Tokens.LET){
             return this.parserFactory
                 .getExpressionParser(ParsingType.VARIABLE_DECLARATION)
@@ -95,18 +105,6 @@ export class CodeParser{
         if(TokenHelpers.isStlArithmeticToken(token)){
             return this.parserFactory
                 .getExpressionParser(ParsingType.ARITHMETIC)
-                .parse(token);
-        }
-
-        if(token === Tokens.PRINT_STL){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.PRINT)
-                .parse(token);
-        }
-
-        if(token.startsWith(Tokens.ARRAY_SIZE_STL)){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.ARRAY_SIZE)
                 .parse(token);
         }
 
