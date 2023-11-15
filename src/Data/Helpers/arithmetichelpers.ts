@@ -16,6 +16,8 @@ export function getPrecedence(condition: string): Precedence {
         case Tokens.GTE:
         case Tokens.LT:
         case Tokens.LTE:
+        case Tokens.AND:
+        case Tokens.OR:
             return Precedence.LOW;
         case Tokens.PLUS:
         case Tokens.MINUS:
