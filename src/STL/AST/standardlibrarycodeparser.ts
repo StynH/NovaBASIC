@@ -35,6 +35,12 @@ export class StandardLibraryCodeParser{
                 .parse(token);
         }
 
+        if(token.startsWith(Tokens.RANDOM_STL)){
+            return this.parserFactory
+                .getExpressionParser(StlParsingType.RANDOM)
+                .parse(token);
+        }
+
         return null;
     }
 }

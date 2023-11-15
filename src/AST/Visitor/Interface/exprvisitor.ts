@@ -17,6 +17,7 @@ import {ArrayDeclarationExpr} from "../../Expressions/Collections/arraydeclarati
 import {ArrayAssignmentExpr} from "../../Expressions/Collections/arrayassignmentexpr";
 import {ArrayResizeExpr} from "../../../STL/AST/Expressions/arrayresizeexpr";
 import {LengthExpr} from "../../../STL/AST/Expressions/lengthexpr";
+import {RandomExpr} from "../../../STL/AST/Expressions/randomexpr";
 
 export interface IExprVisitor{
     visitNullExpr(): void;
@@ -38,10 +39,12 @@ export interface IExprVisitor{
     visitReturnExpr(expr: ReturnExpr): void;
     visitForLoopExpr(expr: ForLoopExpr): void;
 
+    //STL
     visitPrintExp(expr: PrintExpr): void;
     visitArithmeticExpr(expr: ArithmeticExpr): void;
     visitArrayResizeExpr(expr: ArrayResizeExpr): void;
     visitLengthExpr(expr: LengthExpr): void;
+    visitRandomExpr(expr: RandomExpr): void;
 
     visitConstantExpr<T>(expr: ConstantExpr<T>): void;
 }

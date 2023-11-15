@@ -58,7 +58,8 @@ export class Tokens {
     @Token() public static readonly PRINT_STL = "PRINT";
     @Token() public static readonly MATCHES_STL = "MATCHES";
     @Token() public static readonly ARRAY_RESIZE_STL = "ARRAY_RESIZE";
-    @Token() public static readonly LENGTH_STL = "LEN"
+    @Token() public static readonly LENGTH_STL = "LEN";
+    @Token() public static readonly RANDOM_STL = "RAND";
 
     //Patterns
     @Token(true) public static readonly AZ09 = "[a-zA-Z0-9_]+";

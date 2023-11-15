@@ -26,6 +26,7 @@ import {StandardLibraryInterpreter} from "../STL/Interpreter/standardlibraryinte
 import {PrintExpr} from "../STL/AST/Expressions/printexpr";
 import {ArrayResizeExpr} from "../STL/AST/Expressions/arrayresizeexpr";
 import {LengthExpr} from "../STL/AST/Expressions/lengthexpr";
+import {RandomExpr} from "../STL/AST/Expressions/randomexpr";
 
 export class Interpreter extends BaseInterpreter {
 
@@ -369,6 +370,10 @@ export class Interpreter extends BaseInterpreter {
 
     public visitLengthExpr(expr: LengthExpr): void {
         this.stlInterpreter.visitLengthExpr(expr);
+    }
+
+    public visitRandomExpr(expr: RandomExpr): void {
+        this.stlInterpreter.visitRandomExpr(expr);
     }
 
     public debug(): void{

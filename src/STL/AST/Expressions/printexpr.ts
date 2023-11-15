@@ -1,4 +1,4 @@
-import {Expr} from "../../../AST/Expressions/expr";
+import {Expr, ExprList} from "../../../AST/Expressions/expr";
 import {IExprVisitor} from "../../../AST/Visitor/Interface/exprvisitor";
 
 export class PrintExpr extends Expr{

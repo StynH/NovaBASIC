@@ -5,11 +5,13 @@ import {Queue} from "../../../../Data/queue";
 import {PrintParser} from "../printparser";
 import {ArrayResizeParser} from "../arrayresizeparser";
 import {LengthParser} from "../lengthparser";
+import {RandomParser} from "../randomparser";
 
 export enum StlParsingType{
     PRINT,
     ARRAY_RESIZE,
-    LENGTH
+    LENGTH,
+    RANDOM
 }
 
 export class StandardLibraryParserFactory{
@@ -34,6 +36,9 @@ export class StandardLibraryParserFactory{
                     break;
                 case StlParsingType.LENGTH:
                     this.parsers[parsingType] = new LengthParser(this.context, this.tokens);
+                    break;
+                case StlParsingType.RANDOM:
+                    this.parsers[parsingType] = new RandomParser(this.context, this.tokens);
                     break;
             }
         }

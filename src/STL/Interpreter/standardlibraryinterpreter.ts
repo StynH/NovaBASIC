@@ -6,10 +6,14 @@ import {ArrayResizeExpr} from "../AST/Expressions/arrayresizeexpr";
 import {Tokens} from "../../AST/Tokens/tokens";
 import {Interpreter} from "../../Interpeter/interpreter";
 import {LengthExpr} from "../AST/Expressions/lengthexpr";
+import {RandomExpr} from "../AST/Expressions/randomexpr";
+import {IRandomizer, LinearCongruentialRandomizer} from "../Functionality/randomizer";
+import {toInteger} from "lodash";
 
 export class StandardLibraryInterpreter extends BaseInterpreter{
     private readonly context: Interpreter;
     private printer: IPrinter;
+    private randomizer: IRandomizer;
 
     constructor(
         context: Interpreter
@@ -18,6 +22,7 @@ export class StandardLibraryInterpreter extends BaseInterpreter{
 
         this.context = context;
         this.printer = new TerminalPrinter(this.context, "terminalOutput");
+        this.randomizer = new LinearCongruentialRandomizer();
     }
 
     public visitPrintExp(expr: PrintExpr): void {
@@ -46,5 +51,14 @@ export class StandardLibraryInterpreter extends BaseInterpreter{
         else{
             throw new Error(`Variable with name '${expr.variable}' does not have a length attribute.`);
         }
+    }
+
+    public visitRandomExpr(expr: RandomExpr): void {
+        const min = this.context.executeExpr(expr.min);
+        const max = this.context.executeExpr(expr.max);
+        const inclusive = expr.inclusive != null ? this.context.executeExpr(expr.inclusive) : false;
+        const seed = expr.seed != null ? this.context.executeExpr(expr.seed) : Date.now();
+
+        this.context.result = toInteger(this.randomizer.randomIntBetween(min, max, inclusive, seed));
     }
 }
