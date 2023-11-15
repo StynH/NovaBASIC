@@ -1,2 +1,2 @@
 # NovaBASIC Interpreter
-![novabasic](https://github.com/StynVanDeHaterd/NovaBASIC/assets/9077578/fe42fa78-b90d-4088-a669-332c77b3adf3)
+![novabasic](https://github.com/StynVanDeHaterd/NovaBASIC/assets/9077578/80dc5727-aeb1-4a8d-b800-6cc74a2b202f)
