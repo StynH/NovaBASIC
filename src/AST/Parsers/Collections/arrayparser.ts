@@ -1,4 +1,4 @@
-import {ExpressionParser} from "../expressionparser";
+import {ExpressionParser, Parser} from "../expressionparser";
 import {CodeParser} from "../../codeparser";
 import {Queue} from "../../../Data/queue";
 import {Expr, ExprList} from "../../Expressions/expr";
@@ -8,6 +8,7 @@ import {ArrayDeclarationExpr} from "../../Expressions/Collections/arraydeclarati
 import {ConstantExpr} from "../../Expressions/constantexpr";
 import {ArrayAssignmentExpr} from "../../Expressions/Collections/arrayassignmentexpr";
 
+@Parser(Tokens.OPENING_BRACKET)
 export class ArrayParser extends ExpressionParser{
 
     public constructor(

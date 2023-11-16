@@ -2,7 +2,6 @@ import {Queue} from "../Data/queue";
 import {Tokenization} from "./Tokens/tokenization";
 import {Expr} from "./Expressions/expr";
 import {BinaryExpr} from "./Expressions/binaryexpr";
-import {NullExpr} from "./Expressions/nullexpr";
 import {
     boolTryParse,
     decimalTryParse,
@@ -13,7 +12,7 @@ import {
 } from "../Data/Helpers/tryparse";
 import {ConstantExpr} from "./Expressions/constantexpr";
 import {ParsedCode} from "./parsedcode";
-import {ParserFactory, ParsingType} from "./Parsers/Factory/parserfactory";
+import {ParserFactory} from "./Parsers/Factory/parserfactory";
 import {TokenHelpers} from "../STL/AST/Helpers/tokenhelpers";
 import {Tokens} from "./Tokens/tokens";
 import {balanceExpr} from "../Data/Helpers/arithmetichelpers";
@@ -27,7 +26,7 @@ export class CodeParser{
 
     constructor() {
         this.tokens = new Queue<string>();
-        this.parserFactory = new ParserFactory(this, this.tokens);
+        this.parserFactory = new ParserFactory();
         this.stlCodeParser = new StandardLibraryCodeParser(this, this.tokens);
     }
 
@@ -96,62 +95,16 @@ export class CodeParser{
             return stl;
         }
 
-        if(token === Tokens.LET){
+        try{
             return this.parserFactory
-                .getExpressionParser(ParsingType.VARIABLE_DECLARATION)
+                .getExpressionParser(token, this, this.tokens)
                 .parse(token);
-        }
-
-        if(TokenHelpers.isStlArithmeticToken(token)){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.ARITHMETIC)
-                .parse(token);
-        }
-
-        if(token === Tokens.IF){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.CONDITIONAL)
-                .parse(token);
-        }
-
-        if(token === Tokens.GUARD){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.GUARD)
-                .parse(token);
-        }
-
-        if(token === Tokens.NULL){
-            return new NullExpr();
-        }
-
-        if(token === Tokens.SUB){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.FUNCTION_DECLARATION)
-                .parse(token);
-        }
-
-        if(token === Tokens.RETURN){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.RETURN)
-                .parse(token);
-        }
-
-        if(token === Tokens.FOR){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.FOR_LOOP)
-                .parse(token);
-        }
-
-        if(token === Tokens.OPENING_BRACKET){
-            return this.parserFactory
-                .getExpressionParser(ParsingType.ARRAY)
-                .parse(token);
-        }
+        } catch (_e){ /*ignore*/ }
 
         const isFunction= functionTryParse(token)[0];
         if(isFunction){
             return this.parserFactory
-                .getExpressionParser(ParsingType.FUNCTION)
+                .getExpressionParser("FUNCTION", this, this.tokens)
                 .parse(token);
         }
 
@@ -159,11 +112,11 @@ export class CodeParser{
         if(isVariable){
             if(this.tokens.peek() === Tokens.OPENING_BRACKET){
                 return this.parserFactory
-                    .getExpressionParser(ParsingType.ARRAY)
+                    .getExpressionParser(Tokens.OPENING_BRACKET, this, this.tokens)
                     .parse(token);
             }
             return this.parserFactory
-                .getExpressionParser(ParsingType.VARIABLE)
+                .getExpressionParser("VARIABLE", this, this.tokens)
                 .parse(token);
         }
 

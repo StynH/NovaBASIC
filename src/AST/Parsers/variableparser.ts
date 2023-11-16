@@ -1,4 +1,4 @@
-import {ExpressionParser} from "./expressionparser";
+import {ExpressionParser, Parser} from "./expressionparser";
 import {CodeParser} from "../codeparser";
 import {Queue} from "../../Data/queue";
 import {Expr} from "../Expressions/expr";
@@ -7,6 +7,7 @@ import {VariableValueChangeExpr} from "../Expressions/variablevaluechangeexpr";
 import {VariableExpr} from "../Expressions/variableexpr";
 import {variableTryParse} from "../../Data/Helpers/tryparse";
 
+@Parser("VARIABLE")
 export class VariableParser extends ExpressionParser{
 
     public constructor(

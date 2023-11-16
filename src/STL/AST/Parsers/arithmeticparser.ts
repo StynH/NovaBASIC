@@ -1,4 +1,4 @@
-import {ExpressionParser} from "../../../AST/Parsers/expressionparser";
+import {ExpressionParser, Parser} from "../../../AST/Parsers/expressionparser";
 import {CodeParser} from "../../../AST/codeparser";
 import {Queue} from "../../../Data/queue";
 import {Expr} from "../../../AST/Expressions/expr";
@@ -6,6 +6,7 @@ import {Tokens} from "../../../AST/Tokens/tokens";
 import {ArithmeticExpr} from "../Expressions/arithmeticexpr";
 import {TokenHelpers} from "../Helpers/tokenhelpers";
 
+@Parser("ARITHMETIC")
 export class ArithmeticParser extends ExpressionParser{
 
     public constructor(

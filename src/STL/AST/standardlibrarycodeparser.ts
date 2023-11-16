@@ -2,42 +2,42 @@ import {Queue} from "../../Data/queue";
 import {CodeParser} from "../../AST/codeparser";
 import {Expr} from "../../AST/Expressions/expr";
 import {Tokens} from "../../AST/Tokens/tokens"
-import {StandardLibraryParserFactory, StlParsingType} from "./Parsers/Factory/standardlibraryparserfactory";
+import {ParserFactory} from "../../AST/Parsers/Factory/parserfactory";
 
 export class StandardLibraryCodeParser{
 
-    private readonly parserFactory: StandardLibraryParserFactory;
+    private parserFactory: ParserFactory;
 
     constructor(
         private context: CodeParser,
         private tokens: Queue<string>
     ) {
-        this.parserFactory = new StandardLibraryParserFactory(this.context, this.tokens);
+        this.parserFactory = new ParserFactory();
     }
 
     public parseTerm(token: string): Expr | null
     {
         if(token === Tokens.PRINT_STL){
             return this.parserFactory
-                .getExpressionParser(StlParsingType.PRINT)
+                .getExpressionParser(token, this.context, this.tokens)
                 .parse(token);
         }
 
         if(token.startsWith(Tokens.ARRAY_RESIZE_STL)){
             return this.parserFactory
-                .getExpressionParser(StlParsingType.ARRAY_RESIZE)
+                .getExpressionParser(Tokens.ARRAY_RESIZE_STL, this.context, this.tokens)
                 .parse(token);
         }
 
         if(token.startsWith(Tokens.LENGTH_STL)){
             return this.parserFactory
-                .getExpressionParser(StlParsingType.LENGTH)
+                .getExpressionParser(Tokens.LENGTH_STL, this.context, this.tokens)
                 .parse(token);
         }
 
         if(token.startsWith(Tokens.RANDOM_STL)){
             return this.parserFactory
-                .getExpressionParser(StlParsingType.RANDOM)
+                .getExpressionParser(Tokens.RANDOM_STL, this.context, this.tokens)
                 .parse(token);
         }
 

@@ -1,4 +1,4 @@
-import {ExpressionParser} from "../expressionparser";
+import {ExpressionParser, Parser} from "../expressionparser";
 import {CodeParser} from "../../codeparser";
 import {Queue} from "../../../Data/queue";
 import {Expr} from "../../Expressions/expr";
@@ -6,6 +6,7 @@ import {Tokens} from "../../Tokens/tokens";
 import {ConditionalExpr} from "../../Expressions/Conditional/conditionalexpr";
 import {ConstantExpr} from "../../Expressions/constantexpr";
 
+@Parser(Tokens.IF)
 export class ConditionalParser extends ExpressionParser{
 
     public constructor(

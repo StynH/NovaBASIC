@@ -1,10 +1,11 @@
-import {ExpressionParser} from "./expressionparser";
+import {ExpressionParser, Parser} from "./expressionparser";
 import {Queue} from "../../Data/queue";
 import {Tokens} from "../Tokens/tokens";
 import {VariableDeclarationExpr} from "../Expressions/variabledeclarationexpr";
 import {CodeParser} from "../codeparser";
 import {Expr} from "../Expressions/expr";
 
+@Parser(Tokens.LET)
 export class VariableDeclarationParser extends ExpressionParser{
 
     public constructor(

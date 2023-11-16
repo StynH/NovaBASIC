@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import "./AST/Tokens/boilerplate";
 import {Interpreter} from "./Interpeter/interpreter";
 import {CodeParser} from "./AST/codeparser";

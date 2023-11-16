@@ -1,4 +1,4 @@
-import {ExpressionParser} from "../expressionparser";
+import {ExpressionParser, Parser} from "../expressionparser";
 import {CodeParser} from "../../codeparser";
 import {Queue} from "../../../Data/queue";
 import {Expr} from "../../Expressions/expr";
@@ -7,6 +7,7 @@ import {FunctionDeclarationExpr} from "../../Expressions/Functions/functiondecla
 import {FunctionExpr} from "../../Expressions/Functions/functionexpr";
 import {ConstantExpr} from "../../Expressions/constantexpr";
 
+@Parser(Tokens.SUB)
 export class FunctionDeclarationParser extends ExpressionParser{
 
     public constructor(

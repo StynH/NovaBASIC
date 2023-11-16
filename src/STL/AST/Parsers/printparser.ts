@@ -1,10 +1,11 @@
-import {ExpressionParser} from "../../../AST/Parsers/expressionparser";
+import {ExpressionParser, Parser} from "../../../AST/Parsers/expressionparser";
 import {CodeParser} from "../../../AST/codeparser";
 import {Queue} from "../../../Data/queue";
 import {Expr} from "../../../AST/Expressions/expr";
 import {Tokens} from "../../../AST/Tokens/tokens";
 import {PrintExpr} from "../Expressions/printexpr";
 
+@Parser(Tokens.PRINT_STL)
 export class PrintParser extends ExpressionParser{
 
     public constructor(
