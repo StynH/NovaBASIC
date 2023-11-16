@@ -4,7 +4,7 @@ import {IExprVisitor} from "../../../AST/Visitor/Interface/exprvisitor";
 export class PrintExpr extends Expr{
 
     public constructor(
-        public value: string,
+        public value: Expr,
         public interpolation: ExprList
     ) {
         super();

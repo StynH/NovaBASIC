@@ -41,6 +41,16 @@ export class StandardLibraryCodeParser{
                 .parse(token);
         }
 
+        if(token.startsWith(Tokens.FLOOR_STL)
+        || token.startsWith(Tokens.CEIL_STL)
+        || token.startsWith(Tokens.SIN_STL)
+        || token.startsWith(Tokens.COS_STL)
+        || token.startsWith(Tokens.TAN_STL)){
+            return this.parserFactory
+                .getExpressionParser("MATH", this.context, this.tokens)
+                .parse(token);
+        }
+
         return null;
     }
 }

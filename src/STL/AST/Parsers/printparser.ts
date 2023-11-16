@@ -16,7 +16,7 @@ export class PrintParser extends ExpressionParser{
     }
 
     public parse(_token: string): Expr {
-        const value = this.tokens.pop() as string;
+        const value = this.context.parseExpression();
         const interpolation = [];
 
         while(this.tokens.length() > 0){

@@ -18,7 +18,8 @@ export class TerminalPrinter implements IPrinter{
             interpolation.push(this.context.executeExpr(intExpr));
         }
 
-        this.terminal.value += `${this.replacePlaceholders(expr.value, interpolation)}\n`;
+        const string = this.context.executeExpr(expr.value).toString();
+        this.terminal.value += `${this.replacePlaceholders(string, interpolation)}\n`;
     }
 
     private replacePlaceholders(template: string, values: string[]): string {

@@ -1,16 +1,17 @@
 import {Expr} from "../../../AST/Expressions/expr";
 import {IExprVisitor} from "../../../AST/Visitor/Interface/exprvisitor";
 
-export class ArrayResizeExpr extends Expr {
+export class MathOperationExpr extends Expr {
 
     public constructor(
-        public variable: Expr,
-        public size: Expr,
-    ) {
+        public operation: string,
+        public variable: Expr
+    )
+    {
         super();
     }
 
     public accept(visitor: IExprVisitor): void {
-        visitor.visitArrayResizeExpr(this);
+        visitor.visitMathOperationExpr(this);
     }
 }

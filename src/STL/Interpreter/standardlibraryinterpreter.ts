@@ -9,6 +9,8 @@ import {LengthExpr} from "../AST/Expressions/lengthexpr";
 import {RandomExpr} from "../AST/Expressions/randomexpr";
 import {IRandomizer, LinearCongruentialRandomizer} from "../Functionality/randomizer";
 import {toInteger} from "lodash";
+import {MathOperationExpr} from "../AST/Expressions/mathoperationexpr";
+import {ConstantExpr} from "../../AST/Expressions/constantexpr";
 
 export class StandardLibraryInterpreter extends BaseInterpreter{
     private readonly context: Interpreter;
@@ -30,7 +32,9 @@ export class StandardLibraryInterpreter extends BaseInterpreter{
     }
 
     public visitArrayResizeExpr(expr: ArrayResizeExpr): void {
-        const variable = this.context.getVariableValueScopedOrGlobally(expr.variable);
+        const variable = expr.variable instanceof ConstantExpr ?
+            this.context.getVariableValueScopedOrGlobally(expr.variable.value) :
+            this.context.executeExpr(expr.variable);
         const size = this.context.executeExpr(expr.size);
 
         if(!Array.isArray(variable)){
@@ -60,5 +64,28 @@ export class StandardLibraryInterpreter extends BaseInterpreter{
         const seed = expr.seed != null ? this.context.executeExpr(expr.seed) : Date.now();
 
         this.context.result = toInteger(this.randomizer.randomIntBetween(min, max, inclusive, seed));
+    }
+
+    public visitMathOperationExpr(expr: MathOperationExpr): void {
+        const value = this.context.executeExpr(expr.variable);
+
+        if(expr.operation === Tokens.FLOOR_STL){
+            this.context.result = Math.floor(value);
+        }
+        else if(expr.operation === Tokens.CEIL_STL){
+            this.context.result = Math.ceil(value);
+        }
+        else if(expr.operation === Tokens.SIN_STL){
+            this.context.result = Math.sin(value);
+        }
+        else if(expr.operation === Tokens.COS_STL){
+            this.context.result = Math.cos(value);
+        }
+        else if(expr.operation === Tokens.TAN_STL){
+            this.context.result = Math.tan(value);
+        }
+        else{
+            throw new Error(`Unknown math operator '${expr.operation}'.`)
+        }
     }
 }

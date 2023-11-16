@@ -19,7 +19,7 @@ export class ConsolePrinter implements IPrinter{
             interpolation.push(this.context.executeExpr(intExpr));
         }
 
-        console.log(this.replacePlaceholders(expr.value, interpolation));
+        console.log(this.replacePlaceholders(this.context.executeExpr(expr.value), interpolation));
     }
 
     private replacePlaceholders(template: string, values: string[]): string {

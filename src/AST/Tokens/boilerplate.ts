@@ -14,6 +14,5 @@ const stlContext = require.context('../../STL/AST/Parsers', true, /\.ts$/);
 [parserContext, stlContext].forEach(context => {
     context.keys().forEach((key: any) => {
         context(key);
-        console.log(key);
     });
 });

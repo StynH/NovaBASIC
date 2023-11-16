@@ -59,7 +59,14 @@ export class Tokens {
     @Token() public static readonly MATCHES_STL = "MATCHES";
     @Token() public static readonly ARRAY_RESIZE_STL = "ARRAY_RESIZE";
     @Token() public static readonly LENGTH_STL = "LEN";
+
+    //Math
     @Token() public static readonly RANDOM_STL = "RAND";
+    @Token() public static readonly FLOOR_STL = "FLOOR";
+    @Token() public static readonly CEIL_STL = "CEIL";
+    @Token() public static readonly SIN_STL = "SIN";
+    @Token() public static readonly COS_STL = "COS";
+    @Token() public static readonly TAN_STL = "TAN";
 
     //Patterns
     @Token(true) public static readonly AZ09 = "[a-zA-Z0-9_]+";

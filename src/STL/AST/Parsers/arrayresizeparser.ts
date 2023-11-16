@@ -4,7 +4,6 @@ import {Queue} from "../../../Data/queue";
 import {Expr} from "../../../AST/Expressions/expr";
 import {Tokens} from "../../../AST/Tokens/tokens";
 import {ArrayResizeExpr} from "../Expressions/arrayresizeexpr";
-import {VariableExpr} from "../../../AST/Expressions/variableexpr";
 
 @Parser(Tokens.ARRAY_RESIZE_STL)
 export class ArrayResizeParser extends ExpressionParser{
@@ -21,7 +20,7 @@ export class ArrayResizeParser extends ExpressionParser{
             throw new Error(`Malformed ${Tokens.ARRAY_RESIZE_STL}, missing (.`);
         }
 
-        const variable = this.context.parseExpression() as VariableExpr;
+        const variable = this.context.parseExpression();
         this.tokens.pop();
         const size = this.context.parseExpression();
 
@@ -32,7 +31,7 @@ export class ArrayResizeParser extends ExpressionParser{
             throw new Error(`Malformed ${Tokens.ARRAY_RESIZE_STL}, missing (.`);
         }
 
-        return new ArrayResizeExpr(variable.value, size);
+        return new ArrayResizeExpr(variable, size);
     }
 
 }

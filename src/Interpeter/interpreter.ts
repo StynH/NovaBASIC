@@ -27,6 +27,7 @@ import {PrintExpr} from "../STL/AST/Expressions/printexpr";
 import {ArrayResizeExpr} from "../STL/AST/Expressions/arrayresizeexpr";
 import {LengthExpr} from "../STL/AST/Expressions/lengthexpr";
 import {RandomExpr} from "../STL/AST/Expressions/randomexpr";
+import {MathOperationExpr} from "../STL/AST/Expressions/mathoperationexpr";
 
 export class Interpreter extends BaseInterpreter {
 
@@ -52,7 +53,7 @@ export class Interpreter extends BaseInterpreter {
 
         this.memoryTable = new MemoryTable();
         this.functionTable = new FunctionTable();
-        this.gc = new GarbageCollector(this.memoryTable, this.functionTable, true);
+        this.gc = new GarbageCollector(this.memoryTable, this.functionTable, false);
         this.scopeManager = new ScopeManager();
 
         this.regexTester = new RegexTester();
@@ -374,6 +375,10 @@ export class Interpreter extends BaseInterpreter {
 
     public visitRandomExpr(expr: RandomExpr): void {
         this.stlInterpreter.visitRandomExpr(expr);
+    }
+
+    public visitMathOperationExpr(expr: MathOperationExpr): void {
+        this.stlInterpreter.visitMathOperationExpr(expr);
     }
 
     public debug(): void{
