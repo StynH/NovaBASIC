@@ -8,7 +8,6 @@ import {Interpreter} from "../../Interpeter/interpreter";
 import {LengthExpr} from "../AST/Expressions/lengthexpr";
 import {RandomExpr} from "../AST/Expressions/randomexpr";
 import {IRandomizer, LinearCongruentialRandomizer} from "../Functionality/randomizer";
-import {toInteger} from "lodash";
 import {MathOperationExpr} from "../AST/Expressions/mathoperationexpr";
 import {ConstantExpr} from "../../AST/Expressions/constantexpr";
 
@@ -63,7 +62,7 @@ export class StandardLibraryInterpreter extends BaseInterpreter{
         const inclusive = expr.inclusive != null ? this.context.executeExpr(expr.inclusive) : false;
         const seed = expr.seed != null ? this.context.executeExpr(expr.seed) : Date.now();
 
-        this.context.result = toInteger(this.randomizer.randomIntBetween(min, max, inclusive, seed));
+        this.context.result = Math.round(this.randomizer.randomIntBetween(min, max, inclusive, seed));
     }
 
     public visitMathOperationExpr(expr: MathOperationExpr): void {
