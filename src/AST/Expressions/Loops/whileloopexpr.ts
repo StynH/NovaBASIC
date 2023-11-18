@@ -1,19 +1,17 @@
 import {Expr, ExprList} from "../expr";
 import {IExprVisitor} from "../../Visitor/Interface/exprvisitor";
 
-export class ForLoopExpr extends Expr{
+export class WhileLoopExpr extends Expr{
 
     public constructor(
-        public init: Expr,
-        public to: Expr,
+        public condition: Expr,
         public exprTree: ExprList,
-        public step: Expr,
     ) {
         super();
     }
 
     public accept(visitor: IExprVisitor): void {
-        visitor.visitForLoopExpr(this);
+        visitor.visitWhileLoopExpr(this);
     }
 
 }

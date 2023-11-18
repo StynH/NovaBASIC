@@ -43,6 +43,7 @@ export class Tokens {
     @Token() public static readonly CLOSING_PARENTHESIS = ')';
 
     @Token() public static readonly LET = "LET";
+    @Token() public static readonly WHILE = "WHILE";
     @Token() public static readonly FOR = "FOR";
     @Token() public static readonly TO = "TO";
     @Token() public static readonly STEP = "STEP";

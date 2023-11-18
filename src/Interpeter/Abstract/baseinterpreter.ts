@@ -20,6 +20,7 @@ import {VariableValueChangeExpr} from "../../AST/Expressions/variablevaluechange
 import {LengthExpr} from "../../STL/AST/Expressions/lengthexpr";
 import {RandomExpr} from "../../STL/AST/Expressions/randomexpr";
 import {MathOperationExpr} from "../../STL/AST/Expressions/mathoperationexpr";
+import {WhileLoopExpr} from "../../AST/Expressions/Loops/whileloopexpr";
 
 export abstract class BaseInterpreter implements IExprVisitor{
     public visitArithmeticExpr(_expr: ArithmeticExpr): void {
@@ -86,5 +87,8 @@ export abstract class BaseInterpreter implements IExprVisitor{
     }
 
     public visitMathOperationExpr(_expr: MathOperationExpr): void {
+    }
+
+    public visitWhileLoopExpr(_expr: WhileLoopExpr): void {
     }
 }

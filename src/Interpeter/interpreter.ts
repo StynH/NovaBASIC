@@ -28,6 +28,7 @@ import {ArrayResizeExpr} from "../STL/AST/Expressions/arrayresizeexpr";
 import {LengthExpr} from "../STL/AST/Expressions/lengthexpr";
 import {RandomExpr} from "../STL/AST/Expressions/randomexpr";
 import {MathOperationExpr} from "../STL/AST/Expressions/mathoperationexpr";
+import {WhileLoopExpr} from "../AST/Expressions/Loops/whileloopexpr";
 
 export class Interpreter extends BaseInterpreter {
 
@@ -262,6 +263,36 @@ export class Interpreter extends BaseInterpreter {
             const value = this.getVariableValueScopedOrGlobally(variable) + step;
             this.setVariableValueScopedOrGlobally(variable, value);
             loopValue = this.getVariableValueScopedOrGlobally(variable);
+
+            this.gc.destroyScope(this.scopeManager.getScope());
+            this.scopeManager.popScope();
+        }
+
+        this.gc.destroyScope(this.scopeManager.getScope());
+        this.scopeManager.popScope();
+    }
+
+    public visitWhileLoopExpr(expr: WhileLoopExpr): void {
+        this.scopeManager.addScope("WHILE_LOOP");
+
+        let condition = this.executeExpr(expr.condition);
+        while(condition && !this.breakCalled){
+            this.scopeManager.addScope("INNER");
+            for(const innerExpr of expr.exprTree){
+                const result = this.executeExpr(innerExpr);
+                if(this.returnCalled){
+                    this.result = result;
+                    break;
+                }
+            }
+
+            if(this.returnCalled){
+                this.gc.destroyScope(this.scopeManager.getScope());
+                this.scopeManager.popScope();
+                break;
+            }
+
+            condition = this.executeExpr(expr.condition);
 
             this.gc.destroyScope(this.scopeManager.getScope());
             this.scopeManager.popScope();

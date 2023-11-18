@@ -19,6 +19,7 @@ import {ArrayResizeExpr} from "../../../STL/AST/Expressions/arrayresizeexpr";
 import {LengthExpr} from "../../../STL/AST/Expressions/lengthexpr";
 import {RandomExpr} from "../../../STL/AST/Expressions/randomexpr";
 import {MathOperationExpr} from "../../../STL/AST/Expressions/mathoperationexpr";
+import {WhileLoopExpr} from "../../Expressions/Loops/whileloopexpr";
 
 export interface IExprVisitor{
     visitNullExpr(): void;
@@ -39,6 +40,7 @@ export interface IExprVisitor{
     visitFunctionDeclarationExpr(expr: FunctionDeclarationExpr): void;
     visitReturnExpr(expr: ReturnExpr): void;
     visitForLoopExpr(expr: ForLoopExpr): void;
+    visitWhileLoopExpr(expr: WhileLoopExpr): void;
 
     //STL
     visitPrintExp(expr: PrintExpr): void;
